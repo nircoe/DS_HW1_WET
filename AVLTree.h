@@ -14,7 +14,8 @@ class Node
     Node();
 
 public:
-    Node(const T &newdata) : data(newdata), parent(nullptr), left(nullptr), right(nullptr), height(0), id(-1), level(-1) {}
+    Node(const T &newdata) : 
+    data(newdata), parent(nullptr), left(nullptr), right(nullptr), height(0), id(-1), level(-1) {}
     ~Node();
     const T &GetData() const
     {
