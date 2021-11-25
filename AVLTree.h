@@ -39,6 +39,10 @@ public:
     {
         return right;
     }
+    void SetParent(Node<T>* newparent)
+    {
+        parent = newparent;
+    }
     Node<T> *GetParent() const
     {
         return parent;
@@ -78,6 +82,7 @@ public:
 template <class T>
 class AVLTree
 {
+    class NullArgsException : public std::exception {};
     Node<T> *root;
     int sortType; // 1 = ID, 2 = Level
     void InsertNode(Node<T> *root, Node<T> *newnode);
@@ -97,6 +102,10 @@ public:
     int BalanceFactor(Node<T> *root) const;
     void RotateLeft(Node<T> *root);
     void RotateRight(Node<T> *root);
+    void LL_Rotate(Node<T> *root);
+    void LR_Rotate(Node<T> *root);
+    void RL_Rotate(Node<T> *root);
+    void RR_Rotate(Node<T> *root);
 };
 
 template<class T>
@@ -125,10 +134,10 @@ bool AVLTree<T>::Insert(const T& newdata)
     Node<T> *newnode = new Node<T>(newdata);
     if(!newdata)
     {
-        return true;
+        return false;
     }
     InsertNode(root, newnode);
-    return false;
+    return true;
 }
 
 static bool BiggerThen(int n1, int n2)
@@ -168,13 +177,70 @@ void AVLTree<T>::SortByID(Node<T>* root, Node<T>* newnode, Compare cmp)
         }
     }
 }
+template<class T>
+void AVLTree<T>::LL_Rotate(Node<T>* root)
+{
+    if(root)
+    { // maybe add check if pointers are null
+        Node<T> *newroot = root->GetLeft();
+        Node<T> *newleftright = newroot->GetRight();
+        root->SetLeft(newleftright);
+        newroot->SetRight(root);
+        newroot->SetParent(nullptr);
+    }
+}
+
+template<class T>
+void AVLTree<T>::LR_Rotate(Node<T>* root)
+{
+    if(root)
+    { // maybe add check if pointers are null
+        Node<T> *newroot = root->GetLeft()->GetRight();
+        Node<T> *newleftright = newroot->GetLeft();
+        Node<T> *newrightleft = newroot->GetRight();
+        newroot->SetLeft(root->GetLeft());
+        newroot->SetRight(root);
+        newroot->GetLeft()->SetRight(newleftright);
+        newroot->GetRight()->SetLeft(newrightleft);
+        newroot->SetParent(nullptr);
+    }
+}
+
+template<class T>
+void AVLTree<T>::RL_Rotate(Node<T>* root)
+{
+    if(root) // copy pasted from LR, need to modificate, not done
+    { // maybe add check if pointers are null
+        Node<T> *newroot = root->GetRight()->GetLeft();
+        Node<T> *newleftright = newroot->GetLeft();
+        Node<T> *newrightleft = newroot->GetRight();
+        newroot->SetLeft(root->GetLeft());
+        newroot->SetRight(root);
+        newroot->GetLeft()->SetRight(newleftright);
+        newroot->GetRight()->SetLeft(newrightleft);
+        newroot->SetParent(nullptr);
+    }
+}
+
+template<class T>
+void AVLTree<T>::RR_Rotate(Node<T>* root)
+{
+    if (root) // copy pasted from LL, need to modificate, not done
+    { // maybe add check if pointers are null
+        Node<T> *newroot = root->GetLeft();
+        Node<T> *newleftright = newroot->GetRight();
+        root->SetLeft(newleftright);
+        newroot->SetRight(root);
+        newroot->SetParent(nullptr);
+    }
+}
 
 template<class T>
 void AVLTree<T>::InsertNode(Node<T>* root, Node<T>* newnode)
 {
     if(!root || !newnode)
     {
-        throw null_args; // exeption
+        throw NullArgsException(); // exception
     }
     if(sortType == 1) // sort by ID <
     {
@@ -210,21 +276,27 @@ void AVLTree<T>::InsertNode(Node<T>* root, Node<T>* newnode)
         }
     }
     int balance = BalanceFactor(root);
-    if(balance>1)
+    if(balance > 1)
     {
-        if(BalanceFactor(root->GetLeft()) < 0)
+        if(BalanceFactor(root->GetLeft()) >= 0)
         {
-            RotateLeft(root->GetLeft());
+            LL_Rotate(root);
         }
-        RotateRight(root);
+        else
+        {
+            LR_Rotate(root);
+        }
     }
     else if(balance < -1)
     {
-        if(BalanceFactor(root->GetRight()) > 0)
+        if(BalanceFactor(root->GetRight()) <= 0)
         {
-            RotateRight(root->GetRight());
+            RR_Rotate(root);
         }
-        RotateLeft(root);
+        else
+        {
+            RL_Rotate(root);
+        }
     }
 }
 
