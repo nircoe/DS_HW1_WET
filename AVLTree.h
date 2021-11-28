@@ -7,15 +7,16 @@ class Node
     T data;
     int id;
     int level; // -1 if <Group>
+    int height;
+
     Node<T> *parent;
     Node<T> *left;
     Node<T> *right;
-    int height;
+
     Node();
 
 public:
-    Node(const T &newdata) : 
-    data(newdata), parent(nullptr), left(nullptr), right(nullptr), height(0), id(-1), level(-1) {}
+    Node(const T &newdata) : data(newdata), parent(nullptr), left(nullptr), right(nullptr), height(0), id(-1), level(-1) {}
     ~Node();
     const T &GetData() const
     {
@@ -56,7 +57,7 @@ public:
     }
     void SetLevel(int newlevel) // used for players only
     {
-        if(newlevel>0)
+        if (newlevel > 0)
         {
             level = newlevel;
         }
@@ -72,7 +73,6 @@ public:
     }
 
     /////// SetHeight
-
 };
 
 template <class T>
@@ -82,7 +82,7 @@ class AVLTree
     int sortType; // 1 = ID, 2 = Level
     void InsertNode(Node<T> *root, Node<T> *newnode);
     void DeleteNode(Node<T> *node);
-    template<typename Compare>
+    template <typename Compare>
     void SortByID(Node<T> *root, Node<T> *newnode, Compare cmp);
 
 public:
@@ -91,7 +91,7 @@ public:
     ~AVLTree();
     bool Insert(const T &newdata);
     Node<T> *GetRoot() const { return root; }
-    Node<T> *Find(Node<T> *root, const int id) const; // sort by id
+    Node<T> *Find(Node<T> *root, const int id) const;                  // sort by id
     Node<T> *Find(Node<T> *root, const int id, const int level) const; // sort by level
     int TreeHeight() const;
     int BalanceFactor(Node<T> *root) const;
@@ -99,19 +99,19 @@ public:
     void RotateRight(Node<T> *root);
 };
 
-template<class T>
+template <class T>
 AVLTree<T>::~AVLTree()
 {
-    if(root)
+    if (root)
     {
         DeleteNode(root);
     }
 }
 
-template<class T>
-void AVLTree<T>::DeleteNode(Node<T>* node)
+template <class T>
+void AVLTree<T>::DeleteNode(Node<T> *node)
 {
-    if(node)
+    if (node)
     {
         DeleteNode(node->GetLeft());
         DeleteNode(node->GetRight());
@@ -119,11 +119,11 @@ void AVLTree<T>::DeleteNode(Node<T>* node)
     }
 }
 
-template<class T>
-bool AVLTree<T>::Insert(const T& newdata)
+template <class T>
+bool AVLTree<T>::Insert(const T &newdata)
 {
     Node<T> *newnode = new Node<T>(newdata);
-    if(!newdata)
+    if (!newdata)
     {
         return true;
     }
@@ -141,11 +141,11 @@ static bool SmallerThen(int n1, int n2)
     return n1 < n2;
 }
 
-template<class T>
-template<typename Compare>
-void AVLTree<T>::SortByID(Node<T>* root, Node<T>* newnode, Compare cmp)
+template <class T>
+template <typename Compare>
+void AVLTree<T>::SortByID(Node<T> *root, Node<T> *newnode, Compare cmp)
 {
-    if (cmp(newnode->GetID(),root->GetID()))
+    if (cmp(newnode->GetID(), root->GetID()))
     {
         if (root->GetLeft())
         {
@@ -169,14 +169,14 @@ void AVLTree<T>::SortByID(Node<T>* root, Node<T>* newnode, Compare cmp)
     }
 }
 
-template<class T>
-void AVLTree<T>::InsertNode(Node<T>* root, Node<T>* newnode)
+template <class T>
+void AVLTree<T>::InsertNode(Node<T> *root, Node<T> *newnode)
 {
-    if(!root || !newnode)
+    if (!root || !newnode)
     {
         throw null_args; // exeption
     }
-    if(sortType == 1) // sort by ID <
+    if (sortType == 1) // sort by ID <
     {
         SortByID(root, newnode, SmallerThen);
     }
@@ -193,7 +193,7 @@ void AVLTree<T>::InsertNode(Node<T>* root, Node<T>* newnode)
                 root->SetLeft(newnode);
             }
         }
-        else if(newnode->GetLevel() > root->GetLevel())
+        else if (newnode->GetLevel() > root->GetLevel())
         {
             if (root->GetRight())
             {
@@ -210,17 +210,17 @@ void AVLTree<T>::InsertNode(Node<T>* root, Node<T>* newnode)
         }
     }
     int balance = BalanceFactor(root);
-    if(balance>1)
+    if (balance > 1)
     {
-        if(BalanceFactor(root->GetLeft()) < 0)
+        if (BalanceFactor(root->GetLeft()) < 0)
         {
             RotateLeft(root->GetLeft());
         }
         RotateRight(root);
     }
-    else if(balance < -1)
+    else if (balance < -1)
     {
-        if(BalanceFactor(root->GetRight()) > 0)
+        if (BalanceFactor(root->GetRight()) > 0)
         {
             RotateRight(root->GetRight());
         }
@@ -228,21 +228,21 @@ void AVLTree<T>::InsertNode(Node<T>* root, Node<T>* newnode)
     }
 }
 
-template<class T>
-Node<T>* AVLTree<T>::Find(Node<T>* root, const int id) const 
+template <class T>
+Node<T> *AVLTree<T>::Find(Node<T> *root, const int id) const
 {
-    if(!root)
+    if (!root)
     {
         return nullptr;
     }
 
-    if(sortType==1) // sort by ID
+    if (sortType == 1) // sort by ID
     {
-        if(root->GetID() == id)
+        if (root->GetID() == id)
         {
             return root;
         }
-        else if(root->GetID() > id)
+        else if (root->GetID() > id)
         {
             return Find(root->GetLeft(), id);
         }
@@ -262,13 +262,13 @@ Node<T> *AVLTree<T>::Find(Node<T> *root, const int id, const int level) const
         return nullptr;
     }
 
-    if(sortType == 2) // sortType == 2, sort by Level
+    if (sortType == 2) // sortType == 2, sort by Level
     {
-        if(root->GetLevel() == level && root->GetID() == id)
+        if (root->GetLevel() == level && root->GetID() == id)
         {
             return root;
         }
-        else if(root->GetLevel() > level || (root->GetLevel() == level && root->GetID() < id))
+        else if (root->GetLevel() > level || (root->GetLevel() == level && root->GetID() < id))
         {
             return Find(root->GetLeft(), id, level);
         }
@@ -279,7 +279,7 @@ Node<T> *AVLTree<T>::Find(Node<T> *root, const int id, const int level) const
     }
 }
 
-template<class T>
+template <class T>
 int AVLTree<T>::TreeHeight() const
 {
     return this->root->GetHeight();
