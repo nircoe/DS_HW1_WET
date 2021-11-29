@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(int id, int level) : id(id), level(level) {}
+Player::Player(int id, int level, int groupId) : id(id), level(level), groupId(groupId) {}
 int Player::getId()
 {
     return this->id;
@@ -9,7 +9,15 @@ int Player::getLevel()
 {
     return this->level;
 }
+int Player::getGroupId()
+{
+    return groupId;
+}
+int Player::setGroupId(int new_id)
+{
+    groupId = new_id;
+}
 void Player::incrementLevel(int increment)
 {
-    this->level += increment;
+    level += increment;
 }

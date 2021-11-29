@@ -9,7 +9,9 @@
 class PlayersManager
 {
     AVLTree<Player> players_by_id;
-   
+    AVLTree<Player> players_by_level;
+    AVLTree<Group> groups;
+
 public:
     PlayersManager();
     ~PlayersManager() = default;

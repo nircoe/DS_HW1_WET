@@ -17,7 +17,8 @@ public:
     Group(const Group &) = default;
     ~Group() = default;
 
-    void AddPlayerToGroup(Player p);
+    StatusType AddPlayerToGroup(Player p);
+    StatusType RemovePlayerFromGroup(Player p);
 };
 
 #endif
