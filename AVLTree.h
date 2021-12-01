@@ -2,8 +2,8 @@
 #define AVL_TREE_H
 #include "AVLExceptions.h"
 
-// template <typename T>
-// class AVLTree;
+template <typename T>
+class AVLTree;
 
 int max(int a, int b) { return a > b ? a : b; }
 template <typename T>
@@ -15,6 +15,7 @@ class AVLNode
     AVLNode *left;
     AVLNode *parent;
     int height;
+
     AVLNode();
     AVLNode(int key, const T &data) : key(key), data(data), right(NULL), left(NULL), parent(NULL), height(0) {}
     ~AVLNode() = default;
@@ -36,14 +37,12 @@ class AVLNode
 template <typename T>
 class AVLTree
 {
-
     AVLNode<T> *root;
-    AVLNode<T> *getInorderSuccessor(AVLNode<T> *current)
+
+    AVLNode<T> *GetSmallestNode(AVLNode<T> *current)
     {
-        current = current->GetRight();
-        /* loop down to find the leftmost leaf */
-        while (current->left != NULL)
-            current = current->left;
+        while (current->GetLeft())
+            current = current->GetLeft();
         return current;
     }
     AVLNode<T> *GetGreatestNode(AVLNode<T> *current)
@@ -52,60 +51,62 @@ class AVLTree
             current = current->GetRight();
         return current;
     }
-    void RotateLeft(AVLNode<T> *root)
+    AVLNode<T> *RotateLeft(AVLNode<T> *A)
     {
-        //root=A
-        AVLNode<T> *newroot = root->GetRight(); //newroot = B
-        root->SetRight(newroot->GetLeft());     //right(A)=left(B)
-        newroot->SetLeft(root);                 //left(B)=A
-
-        if (root->GetParent() == NULL)
+        AVLNode<T> *B = A->GetRight();
+        AVLNode<T> *Bl = B->GetLeft();
+        A->SetRight(Bl);
+        if (Bl)
+            Bl->SetParent(A);
+        B->SetLeft(A);
+        if (!A->GetParent()) //A is the root if the tree
         {
-            this->root = newroot; //B is the new root of the tree
-            newroot->SetParent(NULL);
+            this->root = B; //B is the new root
+            B->SetParent(NULL);
         }
         else
         {
-            if (root->GetParent()->GetLeft() == root)
+            if (A->GetParent()->GetLeft() == A) //A is the left child of his parent
             {
-                root->GetParent()->SetLeft(newroot);
+                A->GetParent()->SetLeft(B);
             }
-            else
+            else //A is the right child of his parent
             {
-                root->GetParent()->SetRight(newroot);
+                A->GetParent()->SetRight(B);
             }
-            newroot->SetParent(root->GetParent());
+            B->SetParent(A->GetParent());
         }
-        root->SetParent(newroot);
-        root->updateHeight();
-        newroot->updateHeight();
+        A->SetParent(B);
+        A->updateHeight();
+        B->updateHeight();
+        return B;
     }
-    void RotateRight(AVLNode<T> *root)
+    AVLNode<T> *RotateRight(AVLNode<T> *B)
     {
-        AVLNode<T> *newroot = root->GetLeft();
-        root->SetLeft(newroot->GetRight());
-        newroot->SetRight(root);
+        AVLNode<T> *A = B->GetLeft();
+        AVLNode<T> *Ar = A->GetRight();
+        B->SetLeft(Ar);
+        if (Ar)
+            Ar->SetParent(B);
+        A->SetRight(B);
 
-        if (root->GetParent() == NULL)
+        if (!B->GetParent()) //B is the root of the tree
         {
-            this->root = newroot;
-            newroot->SetParent(NULL);
+            this->root = A; //A is the new root
+            A->SetParent(NULL);
         }
-        else
+        else //we are in a sub-tree
         {
-            if (root->GetParent()->GetLeft() == root)
-            {
-                root->GetParent()->SetLeft(newroot);
-            }
-            else
-            {
-                root->GetParent()->SetRight(newroot);
-            }
-            newroot->SetParent(root->GetParent());
+            if (B->GetParent()->GetLeft() == B) //B is the left child of his parent
+                B->GetParent()->SetLeft(A);
+            else //root is right child of his parent
+                B->GetParent()->SetRight(A);
+            A->SetParent(B->GetParent());
         }
-        root->SetParent(newroot);
-        root->updateHeight();
-        newroot->updateHeight();
+        B->SetParent(A);
+        B->updateHeight();
+        A->updateHeight();
+        return A;
     }
     AVLNode<T> *Find_aux(AVLNode<T> *current, int key)
     {
@@ -120,37 +121,59 @@ class AVLTree
         }
         return NULL; //didnt found the node :(
     }
-    void Balance(AVLNode<T> *current)
+    AVLNode<T> *Balance(AVLNode<T> *current)
     {
         int BF = current->BalanceFactor();
         if (BF > 1)
         {
             if (current->GetLeft()->BalanceFactor() < 0)
             {
-                RotateLeft(current->GetLeft()); //do LR rotation
+                current->SetLeft(RotateLeft(current->GetLeft())); //do LR rotation
             }
-
-            RotateRight(current);
+            return RotateRight(current);
         }
         else if (BF < -1)
         {
             if (current->GetRight()->BalanceFactor() > 0)
             {
-                RotateRight(current->GetRight()); // do RL rotation
+                current->SetRight(RotateRight(current->GetRight())); // do RL rotation
             }
-
-            RotateLeft(current);
+            return RotateLeft(current);
         }
+        return current;
     }
-    bool InsertNode(AVLNode<T> *current, AVLNode<T> *to_insert)
+    AVLNode<T> *InsertNode(AVLNode<T> *current, AVLNode<T> *to_insert)
     {
+        if (current == NULL)
+            return to_insert;
+        AVLNode<T> *sub_tree;
+        if (to_insert->GetKey() < current->GetKey()) //go left
+        {
+            sub_tree = InsertNode(current->GetLeft(), to_insert);
+            current->SetLeft(sub_tree);
+            if (sub_tree)
+                sub_tree->SetParent(current);
+        }
+        else if (to_insert->GetKey() > current->GetKey()) //go right
+        {
+            sub_tree = InsertNode(current->GetRight(), to_insert);
+            current->SetRight(sub_tree);
+            if (sub_tree)
+                sub_tree->SetParent(current);
+        }
+        else //equal keys not allowed
+            return current;
+        current->updateHeight();
+        return Balance(current);
+
+        /*
+        bool res = true;
         //Regular binary-tree insertion:
         if (to_insert->GetKey() < current->GetKey()) //go left
         {
             if (current->GetLeft())
             {
-                if (!(InsertNode(current->GetLeft(), to_insert)))
-                    return false;
+                res = InsertNode(current->GetLeft(), to_insert);
             }
             else // found place for new node
             {
@@ -162,8 +185,7 @@ class AVLTree
         {
             if (current->GetRight())
             {
-                if (!(InsertNode(current->GetRight(), to_insert)))
-                    return false;
+                res = InsertNode(current->GetRight(), to_insert);
             }
             else //found place for new node
             {
@@ -175,11 +197,77 @@ class AVLTree
             return false;
         current->updateHeight();
         Balance(current);
-        return true;
+        return res;
+        */
     }
 
     AVLNode<T> *RemoveNode(AVLNode<T> *current, int key_to_remove)
     {
+
+        //////Regular remove from BST tree:
+        if (current == NULL)
+            return current;
+        if (current->GetKey() > key_to_remove) //go left
+        {
+            current->SetLeft(RemoveNode(current->GetLeft(), key_to_remove));
+        }
+        else if (current->GetKey() < key_to_remove) //go right
+        {
+            current->SetRight(RemoveNode(current->GetRight(), key_to_remove));
+        }
+        else //found node to delete
+        {
+            if (current->GetLeft() == NULL || current->GetRight() == NULL) // node with one child or leaf
+            {
+                AVLNode<T> *child = current->GetLeft() ? current->GetLeft() : current->GetRight();
+                if (child == NULL) //node is leaf
+                {
+                    child = current;
+                    if (current->GetParent()->GetLeft() == current) //root is left child of his parent
+                        current->GetParent()->SetLeft(NULL);
+                    else //root is right child of his parent
+                        current->GetParent()->SetRight(NULL);
+                    current = NULL;
+                }
+                else //node has one child
+                {
+                    //copy content of child to current node
+                    current->key = child->key;
+                    current->data = child->data;
+                    current->SetLeft(NULL);
+                    current->SetRight(NULL);
+                }
+                delete child;
+            }
+            else //node has two children
+            {
+                AVLNode<T> *replacement;
+                if (current->left != NULL)
+                {
+                    replacement = GetGreatestNode(current->left);
+                    current->key = replacement->key;
+                    current->data = replacement->data;
+                    current->left = RemoveNode(current->left, replacement->key);
+                }
+                else
+                {
+                    replacement = GetSmallestNode(current->right);
+                    current->key = replacement->key;
+                    current->data = replacement->data;
+                    current->right = RemoveNode(current->right, replacement->data);
+                }
+            }
+        }
+
+        //tree had one node
+        if (current == NULL)
+            return current;
+
+        current->updateHeight();
+        Balance(current);
+        return current;
+
+        /*
         if (current->left == NULL && current->right == NULL) //leaf
         {
             if (current == this->root)
@@ -193,7 +281,7 @@ class AVLTree
         {
             current->right = RemoveNode(current->right, key_to_remove);
         }
-        else if (current->data > key_to_remove) //go left
+        else if (current->key > key_to_remove) //go left
         {
             current->left = RemoveNode(current->left, key_to_remove);
         }
@@ -214,65 +302,32 @@ class AVLTree
                 current->right = RemoveNode(current->right, replacment->data);
             }
         }
-        current->updateHeight();
-        Balance(current);
-        return current;
-        /*
-        // normal binary tree remove
-        if (current == nullptr)
-            return nullptr;
-        if (key_to_remove < current->key)
-            current->left = RemoveNode(current->left, key_to_remove);
-        else if (key_to_remove > current->key)
-            current->right = RemoveNode(current->right, key_to_remove);
-        else // found the node to be deleted
-        {
-            // node with only one child or no child
-            if ((current->left == NULL) || (current->right == NULL))
-            {
-                AVLNode<T> *child = current->left ? current->left : current->right;
-                if (child == NULL) // No child case
-                {
-                    current->GetParent()->GetLeft() == current
-                        ? current->GetParent()->SetLeft(NULL)
-                        : current->GetParent()->SetRight(NULL);
-                }
-                else // One child case
-                {
-                    child->SetParent(current->GetParent());
-                    current->GetParent()->GetLeft() == current
-                        ? current->GetParent()->SetLeft(child)
-                        : current->GetParent()->SetRight(child);
-                }
-                delete current;
-                current = nullptr;
-            }
-            else
-            {
-                // AVLNode<T> *successor_right_son = successor->GetRight();
-                // AVLNode<T> *successor_parent = successor->GetParent();
-                // successor->SetParent(current->GetParent());
-                // successor->SetLeft(current->GetLeft());
-                // successor->SetRight(current->GetRight());
-                // current->SetRight(successor_right_son);
-                // current->SetParent(successor_parent);
-                AVLNode<T> *replacement = GetGreatestNode(current->GetLeft());
-                current->key = replacement->key;
-                current->data = replacement->data;
-            }
-        }
-        if (current == nullptr)
-            return nullptr;
+        if (current == NULL)
+            return NULL;
         current->updateHeight();
         Balance(current);
         return current;
         */
     }
+    void print_tree(AVLNode<T> *node)
+    {
+        if (!node)
+        {
+            return;
+        }
+        print_tree(node->left);
+        std::cout << node->key << " ";
+        print_tree(node->right);
+    }
 
 public:
     AVLTree() : root(NULL) {}
     ~AVLTree() = default;
-    const T &Find(int key) const
+    bool IsEmpty()
+    {
+        return root != NULL;
+    }
+    T &Find(int key) const
     {
         AVLNode<T> *node = Find_aux(root, key);
         if (node)
@@ -295,12 +350,18 @@ public:
             return true;
         }
         else
-            return InsertNode(root, new_node);
+            root = InsertNode(root, new_node);
         return false;
     }
     bool Remove(int key)
     {
-        return RemoveNode(root, key) != NULL;
+        root = RemoveNode(root, key);
+        //what to return?
+    }
+    void Print()
+    {
+        print_tree(root);
+        std::cout << "" << std::endl;
     }
 };
 

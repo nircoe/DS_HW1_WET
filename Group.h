@@ -9,7 +9,7 @@ class Group
 {
     int id;
     AVLTree<Player> players_by_id;
-    AVLTree<Player> players_by_level;
+    AVLTree<AVLTree<Player>> players_by_level;
 
 public:
     Group(int id);
@@ -19,6 +19,7 @@ public:
 
     StatusType AddPlayerToGroup(Player p);
     StatusType RemovePlayerFromGroup(Player p);
+    //gethighest
 };
 
 #endif
