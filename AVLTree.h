@@ -203,15 +203,14 @@ class AVLTree
 
     AVLNode<T> *RemoveNode(AVLNode<T> *current, int key_to_remove)
     {
-
-        //////Regular remove from BST tree:
+        //Regular remove from BST tree:
         if (current == NULL)
             return current;
-        if (current->GetKey() > key_to_remove) //go left
+        if (current->GetKey() > key_to_remove) //remove from left sub-tree
         {
             current->SetLeft(RemoveNode(current->GetLeft(), key_to_remove));
         }
-        else if (current->GetKey() < key_to_remove) //go right
+        else if (current->GetKey() < key_to_remove) //remove from right sub-tree
         {
             current->SetRight(RemoveNode(current->GetRight(), key_to_remove));
         }
@@ -223,10 +222,10 @@ class AVLTree
                 if (child == NULL) //node is leaf
                 {
                     child = current;
-                    if (current->GetParent()->GetLeft() == current) //root is left child of his parent
-                        current->GetParent()->SetLeft(NULL);
-                    else //root is right child of his parent
-                        current->GetParent()->SetRight(NULL);
+                    //disconnect current from his parent
+                    AVLNode<T> *parent = current->GetParent();
+                    if (parent) //current is not the root of the tree
+                        parent->GetLeft() == current ? parent->SetLeft(NULL) : parent->SetRight(NULL);
                     current = NULL;
                 }
                 else //node has one child
@@ -238,6 +237,7 @@ class AVLTree
                     current->SetRight(NULL);
                 }
                 delete child;
+                child = NULL;
             }
             else //node has two children
             {
@@ -264,8 +264,7 @@ class AVLTree
             return current;
 
         current->updateHeight();
-        Balance(current);
-        return current;
+        return Balance(current);
 
         /*
         if (current->left == NULL && current->right == NULL) //leaf
@@ -350,7 +349,10 @@ public:
             return true;
         }
         else
+        {
             root = InsertNode(root, new_node);
+            //how to check that the insert succeded?
+        }
         return false;
     }
     bool Remove(int key)
