@@ -11,7 +11,7 @@ int Player::getLevel()
 }
 int Player::getGroupId()
 {
-    return groupId;
+    return this->groupId;
 }
 int Player::setGroupId(int new_id)
 {

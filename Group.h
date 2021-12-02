@@ -19,6 +19,8 @@ public:
 
     StatusType AddPlayerToGroup(Player p);
     StatusType RemovePlayerFromGroup(Player p);
+    AVLTree<Player> GetPlayerById() const;
+    AVLTree<AVLTree<Player>> GetPlayerByLevel() const;
     //gethighest
 };
 
