@@ -132,7 +132,7 @@ StatusType PlayersManager::GetGroupsHighestLevel(int numOfGroups, int **Players)
 {
 }
 
-StatusType GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> tree, int** Players, int* numOfPlayers)
+StatusType PlayersManager::GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> tree, int** Players, int* numOfPlayers)
 {
     *numOfPlayers = tree.GetTreeSize();
     if (*numOfPlayers == 0)
