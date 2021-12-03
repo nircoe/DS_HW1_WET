@@ -85,7 +85,7 @@ StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
 {
     if (PlayerID <= 0 || LevelIncrease <= 0)
         return INVALID_INPUT;
-    if (players_by_id.Exists(PlayerID))
+    if (!players_by_id.Exists(PlayerID))
         return FAILURE;
     Player p = players_by_id.Find(PlayerID);
     Group g = groups.Find(p.getGroupId());
@@ -107,6 +107,7 @@ StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
         players_by_level.Insert(p.getLevel(), p_tree);
     }
     g.AddPlayerToGroup(p);
+    return SUCCESS;
 }
 StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
 {
@@ -127,7 +128,7 @@ StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     if (!groups.Exists(GroupID)) // the group doesn't exist
         return FAILURE;
     Group &g = groups.Find(GroupID);                                                   // not gonna throw because it is Exists
-    AVLTree<AVLTree<Player>> group_players_level_tree = g.GetPlayerByLevel();          // get the AVLTree of players by level of this group
+    AVLTree<AVLTree<Player>> group_players_level_tree = g.GetPlayerByLevel(); // get the AVLTree of players by level of this group
     AVLTree<Player> *group_highest_level_tree = group_players_level_tree.GetHighest(); // get the highest node in the tree
     if (!group_highest_level_tree)                                                     // there is no players in this group
         return SUCCESS;
