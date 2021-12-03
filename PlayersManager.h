@@ -13,7 +13,7 @@ class PlayersManager
     AVLTree<Group> groups;
     StatusType GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> tree, int **Players, int *numOfPlayers);
 
-    public:
+public:
     PlayersManager();
     ~PlayersManager() = default;
     StatusType AddGroup(int GroupID);

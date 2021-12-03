@@ -1,7 +1,6 @@
 #ifndef AVL_TREE_H
 #define AVL_TREE_H
 #include "AVLExceptions.h"
-#include "Player.h"
 
 template <typename T>
 class AVLTree;
@@ -33,8 +32,9 @@ class AVLNode
     void updateHeight() { this->height = 1 + max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
 
     friend class AVLTree<T>;
-    friend void LTRInOrder(AVLNode<Player> *node, int **array, int *index);
-    friend void RTLInOrder(AVLNode<AVLTree<Player>> *node, int **array, int *index);
+    friend void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size);
+    friend void LTRInOrderForPlayers(AVLNode<Player> *node, int **array, int *index);
+    friend void RTLInOrderForPlayers(AVLNode<AVLTree<Player>> *node, int **array, int *index);
 };
 
 template <typename T>
@@ -47,21 +47,15 @@ class AVLTree
 
     AVLNode<T> *GetSmallestNode(AVLNode<T> *current)
     {
-        return lowest;
-        /*
         while (current->GetLeft())
             current = current->GetLeft();
         return current;
-        */
     }
     AVLNode<T> *GetGreatestNode(AVLNode<T> *current)
     {
-        return highest;
-        /*
         while (current->GetRight())
             current = current->GetRight();
         return current;
-        */
     }
     AVLNode<T> *RotateLeft(AVLNode<T> *A)
     {
@@ -459,26 +453,8 @@ public:
         print_tree(root);
         std::cout << "" << std::endl;
     }
-    friend void LTRInOrder(AVLNode<Player> *node, int **array, int *index);
-    friend void RTLInOrder(AVLNode<AVLTree<Player>> *node, int **array, int *index);
+    friend void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size);
+    friend void LTRInOrderForPlayers(AVLNode<Player> *node, int **array, int *index);
+    friend void RTLInOrderForPlayers(AVLNode<AVLTree<Player>> *node, int **array, int *index);
 };
-
-void LTRInOrder(AVLNode<Player> *node, int **array, int *index) // left to right
-{
-    if (!node)
-        return;
-    LTRInOrder(node->GetLeft(), array, index);
-    *array[(*index)++] = node->GetData().getId();
-    LTRInOrder(node->GetRight(), array, index);
-}
-
-void RTLInOrder(AVLNode<AVLTree<Player>> *node, int **array, int *index) // right to left
-{
-    if (!node)
-        return;
-    RTLInOrder(node->GetRight(), array, index);
-    LTRInOrder(node->GetData().GetRoot(), array, index);
-    RTLInOrder(node->GetLeft(), array, index);
-}
-
 #endif

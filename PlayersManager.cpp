@@ -128,8 +128,17 @@ StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     *PlayerID = highest_player->getId();
     return SUCCESS;
 }
+
 StatusType PlayersManager::GetGroupsHighestLevel(int numOfGroups, int **Players)
 {
+    if(Players == nullptr || numOfGroups < 1)
+        return INVALID_INPUT;
+    Players = new int *[numOfGroups];
+    int index = 0;
+    LTRInOrderForGroups(groups.GetRoot(), Players, &index, numOfGroups);
+    if(index < numOfGroups) // maybe delete Players
+        return FAILURE;
+    return SUCCESS;
 }
 
 StatusType PlayersManager::GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> tree, int** Players, int* numOfPlayers)
@@ -142,7 +151,7 @@ StatusType PlayersManager::GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> tre
     }
     Players = new int *[*numOfPlayers];
     int index = 0;
-    RTLInOrder(tree.GetRoot(), Players, &index);
+    RTLInOrderForPlayers(tree.GetRoot(), Players, &index);
     return SUCCESS;
 }
 
