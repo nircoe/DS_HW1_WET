@@ -21,19 +21,10 @@ public:
     StatusType RemovePlayerFromGroup(Player p);
     AVLTree<Player> GetPlayerById() const;
     AVLTree<AVLTree<Player>> GetPlayerByLevel() const;
-    friend void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size);
+
+    //friend void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size);
     //gethighest
 };
 
-void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size)
-{
-    if (!node || *index >= size)
-        return;
-    LTRInOrderForGroups(node->GetLeft(), array, index, size);
-    if (node->GetData().GetPlayerById().GetTreeSize() > 0)
-        *array[(*index)++] = node->GetData().GetPlayerByLevel().GetHighest()->GetLowest()->getId();
-    // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group
-    LTRInOrderForGroups(node->GetRight(), array, index, size);
-}
 
 #endif

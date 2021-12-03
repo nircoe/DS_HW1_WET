@@ -20,7 +20,7 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int Level)
     if (players_by_id.Exists(PlayerID) || !groups.Exists(GroupID))
         return FAILURE;
     Group &g = groups.Find(GroupID); // doesn't gonna throw because its Exists
-    Player p = Player(PlayerID, Level, GroupID);
+    Player p = Player(PlayerID, Level, g);
     if (!players_by_id.Insert(PlayerID, p)) // check if Insert return false => only on allocation error
         return ALLOCATION_ERROR;
     AVLTree<Player> p_tree = AVLTree<Player>();
@@ -45,7 +45,7 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
     if (!players_by_id.Exists(PlayerID))
         return FAILURE;
     Player &p = players_by_id.Find(PlayerID);
-    Group &g = groups.Find(p.getGroupId());
+    Group &g = p.getGroup();
     StatusType st = g.RemovePlayerFromGroup(p);
     if (st != SUCCESS) // check if the RemovePlayerFromGroup succeed
         return st;
@@ -88,7 +88,7 @@ StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
     if (!players_by_id.Exists(PlayerID))
         return FAILURE;
     Player p = players_by_id.Find(PlayerID);
-    Group g = groups.Find(p.getGroupId());
+    Group g = p.getGroup();
     AVLTree<Player> p_tree = players_by_level.Find(p.getLevel());
     //removing the player and increasing his level
     g.RemovePlayerFromGroup(p);
@@ -145,7 +145,7 @@ StatusType PlayersManager::GetGroupsHighestLevel(int numOfGroups, int **Players)
         return INVALID_INPUT;
     Players = new int *[numOfGroups];
     int index = 0;
-    LTRInOrderForGroups(groups.GetRoot(), Players, &index, numOfGroups);
+    LTRInOrderForGroups<Group>(groups.GetRoot(), Players, &index, numOfGroups);
     if(index < numOfGroups) // maybe delete Players
         return FAILURE;
     return SUCCESS;
@@ -161,7 +161,7 @@ StatusType PlayersManager::GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> tre
     }
     Players = new int *[*numOfPlayers];
     int index = 0;
-    RTLInOrderForPlayers(tree.GetRoot(), Players, &index);
+    RTLInOrderForPlayers<AVLTree<Player>>(tree.GetRoot(), Players, &index);
     return SUCCESS;
 }
 

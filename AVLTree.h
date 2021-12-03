@@ -3,6 +3,16 @@
 #include "AVLExceptions.h"
 
 template <typename T>
+class AVLNode;
+
+template <typename type>
+void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size);
+template <typename type>
+void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
+template <typename type>
+void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
+
+template <typename T>
 class AVLTree;
 
 int max(int a, int b) { return a > b ? a : b; }
@@ -21,6 +31,7 @@ class AVLNode
     ~AVLNode() = default;
     int GetKey() const { return (this) ? key : -1; }
     T GetData() const { return data; }
+    T &GetData() const { return data; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
     AVLNode *GetLeft() const { return left; }
     void SetRight(AVLNode *new_right) { right = new_right; }
@@ -32,9 +43,14 @@ class AVLNode
     void updateHeight() { this->height = 1 + max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
 
     friend class AVLTree<T>;
-    friend void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size);
-    friend void LTRInOrderForPlayers(AVLNode<Player> *node, int **array, int *index);
-    friend void RTLInOrderForPlayers(AVLNode<AVLTree<Player>> *node, int **array, int *index);
+    //friend class Group;
+    //friend class Player;
+    template <typename type>
+    friend void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size);
+    template <typename type>
+    friend void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
+    template <typename type>
+    friend void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
 };
 
 template <typename T>
@@ -255,6 +271,22 @@ class AVLTree
         std::cout << node->key << " ";
         print_tree(node->right);
     }
+    void GetDataArray_AUX(AVLNode<T> *node, T **array, int *index)
+    {
+        if (!node)
+            return;
+        GetDataArray(node->GetLeft(), array, index);
+        array[(*index)++] = &(node->GetData());
+        GetDataArray(node->GetRight(), array, index);
+    }
+    void GetKeysArray_AUX(AVLNode<T> *node, int* array, int *index)
+    {
+        if(!node)
+            return;
+        GetKeysArray_AUX(node->GetLeft(), array, index);
+        array[(*index)++] = node->GetKey();
+        GetKeysArray_AUX(node->GetRight(), array, index);
+    }
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
@@ -301,7 +333,7 @@ public:
     {
         try
         {
-            T &f = Find(key);
+            Find(key);
         }
         catch (FAILURE_exception &e) // goes here only if doesn't Exist
         {
@@ -377,8 +409,62 @@ public:
         print_tree(root);
         std::cout << "" << std::endl;
     }
-    friend void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size);
-    friend void LTRInOrderForPlayers(AVLNode<Player> *node, int **array, int *index);
-    friend void RTLInOrderForPlayers(AVLNode<AVLTree<Player>> *node, int **array, int *index);
+    T **GetDataArray() const
+    {
+        int index = 0;
+        T **array = new T*[size];
+        GetDataArray_AUX(root, array, &index);
+        return array;
+    }
+    int *GetKeysArray() const
+    {
+        int index = 0;
+        int *array = new int[size];
+        GetKeysArray_AUX(root, array, &index);
+        return array;
+    }
+
+    friend class Group;
+    friend class Player;
+
+    template <typename type>
+    friend void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size);
+    template <typename type>
+    friend void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
+    template <typename type>
+    friend void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
 };
+
+template <typename type>
+void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size)
+{
+    if (!node || *index >= size)
+        return;
+    LTRInOrderForGroups(node->GetLeft(), array, index, size);
+    if (node->GetData().GetPlayerById().GetTreeSize() > 0)
+        *array[(*index)++] = node->GetData().GetPlayerByLevel().GetHighest()->GetLowest()->getId();
+    // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group
+    LTRInOrderForGroups(node->GetRight(), array, index, size);
+}
+
+template <typename type>
+void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // left to right
+{
+    if (!node)
+        return;
+    LTRInOrderForPlayers(node->GetLeft(), array, index);
+    *array[(*index)++] = node->GetData().getId();
+    LTRInOrderForPlayers(node->GetRight(), array, index);
+}
+
+template <typename type>
+void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // right to left
+{
+    if (!node)
+        return;
+    RTLInOrderForPlayers(node->GetRight(), array, index);
+    LTRInOrderForPlayers(node->GetData().GetRoot(), array, index);
+    RTLInOrderForPlayers(node->GetLeft(), array, index);
+}
+
 #endif
