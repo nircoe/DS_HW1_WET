@@ -1,8 +1,8 @@
 #ifndef PLAYERS_MNGR_H
 #define PLAYERS_MNGR_H
 
-#include "AVLTree.h"
 #include "library1.h"
+#include "AVLTree.h"
 #include "Player.h"
 #include "Group.h"
 
@@ -13,7 +13,7 @@ class PlayersManager
     AVLTree<Group> groups;
     StatusType GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> tree, int **Players, int *numOfPlayers);
 
-    public:
+public:
     PlayersManager();
     ~PlayersManager() = default;
     StatusType AddGroup(int GroupID);

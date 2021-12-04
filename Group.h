@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "library1.h"
 
+class Player;
+
 class Group
 {
     int id;
@@ -21,6 +23,8 @@ public:
     StatusType RemovePlayerFromGroup(Player p);
     AVLTree<Player> GetPlayerById() const;
     AVLTree<AVLTree<Player>> GetPlayerByLevel() const;
+    void SetTrees(AVLTree<Player> &players_by_id, AVLTree<AVLTree<Player>> &players_by_level);
+    //friend void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size);
     //gethighest
 };
 
