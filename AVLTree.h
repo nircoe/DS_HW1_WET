@@ -15,7 +15,8 @@ void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
 template <typename T>
 class AVLTree;
 
-int max(int a, int b) { return a > b ? a : b; }
+//int getMax(int a, int b) { return a > b ? a : b; }
+
 template <typename T>
 class AVLNode
 {
@@ -29,18 +30,18 @@ class AVLNode
     AVLNode();
     AVLNode(int key, const T &data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
     ~AVLNode() = default;
-    int GetKey() const { return (this) ? key : -1; }
-    T GetData() const { return data; }
-    T &GetData() const { return data; }
+    int GetKey() const { return (this==0) ? key : -1; }
+    T *GetData() { return &data; }
+    T &GetDataByRef() { return data; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
     AVLNode *GetLeft() const { return left; }
     void SetRight(AVLNode *new_right) { right = new_right; }
     AVLNode *GetRight() const { return right; }
     void SetParent(AVLNode *new_parent) { parent = new_parent; }
     AVLNode *GetParent() const { return parent; }
-    int GetHeight() const { return (this) ? height : -1; }
+    int GetHeight() const { return (this==0) ? height : -1; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
-    void updateHeight() { this->height = 1 + max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
+    void updateHeight() { this->height = 1 + std::max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
 
     friend class AVLTree<T>;
     //friend class Group;
@@ -276,7 +277,7 @@ class AVLTree
         if (!node)
             return;
         GetDataArray(node->GetLeft(), array, index);
-        array[(*index)++] = &(node->GetData());
+        array[(*index)++] = node->GetData();
         GetDataArray(node->GetRight(), array, index);
     }
     void GetKeysArray_AUX(AVLNode<T> *node, int* array, int *index)
@@ -302,28 +303,28 @@ public:
     T *GetRootData() const
     {
         if (root != nullptr)
-            return &(root->GetData());
+            return root->GetData();
         return nullptr;
     }
     T *GetHighest() const
     {
         if (highest != nullptr)
-            return &(highest->GetData());
+            return highest->GetData();
         return nullptr;
     }
     T *GetLowest() const
     {
         if (lowest != nullptr)
-            return &(lowest->GetData());
+            return lowest->GetData();
         return nullptr;
     }
     bool IsEmpty()
     {
         return root != nullptr;
     }
-    T &Find(int key) const
+    T *Find(int key)
     {
-        AVLNode<T> *node = Find_aux(root, key);
+        AVLNode<T> *node = Find_aux(this->root, key);
         if (node)
             return node->GetData();
         throw FAILURE_exception();
@@ -441,8 +442,8 @@ void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size)
     if (!node || *index >= size)
         return;
     LTRInOrderForGroups(node->GetLeft(), array, index, size);
-    if (node->GetData().GetPlayerById().GetTreeSize() > 0)
-        *array[(*index)++] = node->GetData().GetPlayerByLevel().GetHighest()->GetLowest()->getId();
+    if (node->GetDataByRef().GetPlayerById().GetTreeSize() > 0)
+        *array[(*index)++] = node->GetDataByRef().GetPlayerByLevel().GetHighest()->GetLowest()->getId();
     // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group
     LTRInOrderForGroups(node->GetRight(), array, index, size);
 }
@@ -453,7 +454,7 @@ void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // left 
     if (!node)
         return;
     LTRInOrderForPlayers(node->GetLeft(), array, index);
-    *array[(*index)++] = node->GetData().getId();
+    *array[(*index)++] = node->GetDataByRef().getId();
     LTRInOrderForPlayers(node->GetRight(), array, index);
 }
 
@@ -463,7 +464,7 @@ void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // right
     if (!node)
         return;
     RTLInOrderForPlayers(node->GetRight(), array, index);
-    LTRInOrderForPlayers(node->GetData().GetRoot(), array, index);
+    LTRInOrderForPlayers(node->GetDataByRef().GetRoot(), array, index);
     RTLInOrderForPlayers(node->GetLeft(), array, index);
 }
 

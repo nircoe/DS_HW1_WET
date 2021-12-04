@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "library1.h"
 
+class Player;
+
 class Group
 {
     int id;
