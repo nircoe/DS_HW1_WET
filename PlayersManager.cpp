@@ -111,7 +111,7 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
         k++;
         j++;
     }
-    AVLTree<Player> *merged_tree_by_id = SortedArrayToAVL(merged_keys, merged);
+    AVLTree<Player> *merged_tree_by_id = merged_tree_by_id->SortedArrayToAVL(merged_keys, merged);
 
     // create and merge trees by level:
     n_group = current_group->GetPlayerByLevel().GetTreeSize();
@@ -126,7 +126,10 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     replacement_by_level = replacement_group->GetPlayerByLevel().GetDataArray();
 
     //merge arrays
-    int i = 0, j = 0, k = 0, l1, l2;
+    i = 0;
+    j = 0;
+    k = 0;
+    int l1, l2;
     while (i < n_group && j < n_replacement)
     {
         l1 = group_by_level[i]->GetRootData()->getLevel();
@@ -161,7 +164,7 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
         k++;
         j++;
     }
-    AVLTree<AVLTree<Player>> *merged_tree_by_level = SortedArrayToAVL(merged_keys, merged_by_level);
+    AVLTree<AVLTree<Player>> *merged_tree_by_level = merged_tree_by_level->SortedArrayToAVL(merged_keys, merged_by_level);
     replacement_group->SetTrees(*merged_tree_by_id, *merged_tree_by_level);
     return SUCCESS;
 }

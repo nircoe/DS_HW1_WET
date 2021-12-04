@@ -276,9 +276,9 @@ class AVLTree
     {
         if (!node)
             return;
-        GetDataArray(node->GetLeft(), array, index);
+        GetDataArray_AUX(node->GetLeft(), array, index);
         array[(*index)++] = node->GetData();
-        GetDataArray(node->GetRight(), array, index);
+        GetDataArray_AUX(node->GetRight(), array, index);
     }
     void GetKeysArray_AUX(AVLNode<T> *node, int *array, int *index)
     {
@@ -288,7 +288,7 @@ class AVLTree
         array[(*index)++] = node->GetKey();
         GetKeysArray_AUX(node->GetRight(), array, index);
     }
-    AVLNode<T> *SortedArrayToAVL_aux(int keys[], T *data[], int start, int end)
+    AVLNode<T> *SortedArrayToAVL_aux(int keys[], T *data[], int start, int end, AVLNode<T>* min, AVLNode<T>* max, const int last_index)
     {
         //Base Case
         if (start > end)
@@ -297,14 +297,17 @@ class AVLTree
         //Get the middle element and make it root
         int mid = (start + end) / 2;
         AVLNode<T> *root = new AVLNode<T>(keys[mid], *data[mid]);
-
+        if(mid==0)
+            min = root;
+        else if (mid == last_index)
+            max = root;
         //Recursively construct the left subtree and make it left child of root
-        AVLNode<T> *left_child = SortedArrayToAVL_aux(keys, data, start, mid - 1);
+        AVLNode<T> *left_child = SortedArrayToAVL_aux(keys, data, start, mid - 1, min, max, last_index);
         root->SetLeft(left_child);
         if (left_child)
             left_child->SetParent(root);
         //Recursively construct the right subtree and make it right child of root
-        AVLNode<T> *right_child = SortedArrayToAVL_aux(keys, data, mid + 1, end);
+        AVLNode<T> *right_child = SortedArrayToAVL_aux(keys, data, mid + 1, end, min, max, last_index);
         root->SetRight(right_child);
         if (right_child)
             right_child->SetParent(root);
@@ -441,19 +444,30 @@ public:
         print_tree(root);
         std::cout << "" << std::endl;
     }
-    T **GetDataArray() const
+    T **GetDataArray()
     {
         int index = 0;
         T **array = new T *[size];
         GetDataArray_AUX(root, array, &index);
         return array;
     }
-    int *GetKeysArray() const
+    int *GetKeysArray()
     {
         int index = 0;
         int *array = new int[size];
         GetKeysArray_AUX(root, array, &index);
         return array;
+    }
+    AVLTree<T> *SortedArrayToAVL(int *keys, T **data)
+    {
+        int n = sizeof(keys) / sizeof(keys[0]);
+        AVLNode<T> *min = nullptr, *max = nullptr;
+        AVLNode<T> *root = SortedArrayToAVL_aux(keys, data, 0, n - 1, min, max, n-1);
+        AVLTree<T> *tree = new AVLTree<T>;
+        tree->Insert(root->GetKey(), *(root->GetData()));
+        tree->SetHighest(max);
+        tree->SetLowest(min);
+        return tree;
     }
 
     friend class Group;
@@ -465,8 +479,6 @@ public:
     friend void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
     template <typename type>
     friend void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
-    template <class T>
-    friend AVLTree<T> *SortedArrayToAVL(int **keys, T **data);
 };
 
 template <typename type>
@@ -499,17 +511,6 @@ void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // right
     RTLInOrderForPlayers(node->GetRight(), array, index);
     LTRInOrderForPlayers(node->GetDataByRef().GetRoot(), array, index);
     RTLInOrderForPlayers(node->GetLeft(), array, index);
-}
-template <class T>
-AVLTree<T> *SortedArrayToAVL(int *keys, T **data)
-{
-    int n = sizeof(keys) / sizeof(keys[0]);
-    AVLNode<T> *root = SortedArrayToAVL_aux(keys, data, 0, n - 1);
-    AVLTree<T> *tree = new AVLTree<T>;
-    tree->Insert(root->GetKey(), *(root->GetData()));
-    tree->SetHighest(data[n - 1]);
-    tree->SetLowest(data[0]);
-    return tree;
 }
 
 #endif
