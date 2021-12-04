@@ -288,7 +288,7 @@ class AVLTree
         array[(*index)++] = node->GetKey();
         GetKeysArray_AUX(node->GetRight(), array, index);
     }
-    AVLNode<T> *SortedArrayToAVL_aux(int keys[], T data[], int start, int end)
+    AVLNode<T> *SortedArrayToAVL_aux(int keys[], T *data[], int start, int end)
     {
         //Base Case
         if (start > end)
@@ -296,20 +296,28 @@ class AVLTree
 
         //Get the middle element and make it root
         int mid = (start + end) / 2;
-        AVLNode<T> *root = new AVLNode<T>(keys[mid], data[mid]);
+        AVLNode<T> *root = new AVLNode<T>(keys[mid], *data[mid]);
 
         //Recursively construct the left subtree and make it left child of root
-        AVLNode<T> *left_child = sortedArrayToBST_aux(keys, data, start, mid - 1);
+        AVLNode<T> *left_child = SortedArrayToAVL_aux(keys, data, start, mid - 1);
         root->SetLeft(left_child);
         if (left_child)
             left_child->SetParent(root);
         //Recursively construct the right subtree and make it right child of root
-        AVLNode<T> *right_child = sortedArrayToBST_aux(keys, data, mid + 1, end);
+        AVLNode<T> *right_child = SortedArrayToAVL_aux(keys, data, mid + 1, end);
         root->SetRight(right_child);
         if (right_child)
             right_child->SetParent(root);
         root->updateHeight();
         return root;
+    }
+    void SetHighest(AVLNode<T> *new_highest)
+    {
+        highest = new_highest;
+    }
+    void SetLowest(AVLNode<T> *new_lowest)
+    {
+        lowest = new_lowest;
     }
 
 public:
@@ -497,6 +505,11 @@ AVLTree<T> *SortedArrayToAVL(int *keys, T **data)
 {
     int n = sizeof(keys) / sizeof(keys[0]);
     AVLNode<T> *root = SortedArrayToAVL_aux(keys, data, 0, n - 1);
+    AVLTree<T> *tree = new AVLTree<T>;
+    tree->Insert(root->GetKey(), *(root->GetData()));
+    tree->SetHighest(data[n - 1]);
+    tree->SetLowest(data[0]);
+    return tree;
 }
 
 #endif
