@@ -61,25 +61,41 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     if (GroupID <= 0 || ReplacementID <= 0 || GroupID == ReplacementID)
         return INVALID_INPUT;
     // no group return FAILURE
-    if (groups.Exists(GroupID) && groups.Exists(ReplacementID))
-    {
-        Group &current_group = groups.Find(GroupID), &replacment_group = groups.Find(ReplacementID);
-        AVLTree<Player> players = current_group.GetPlayerById();
-        while (!players.IsEmpty()) // untill all players have been transfer
-        {
-            Player *root_player = players.GetRootData();
-            StatusType stAdd = replacment_group.AddPlayerToGroup(*root_player);
-            if (stAdd != SUCCESS) // if the add failed
-                return stAdd;
-            StatusType stRemove = current_group.RemovePlayerFromGroup(*root_player);
-            if (stRemove != SUCCESS) // if the remove failed
-                return stRemove;
-            players.Remove(root_player->getId()); // the tree isn't empty so should return true always
-        }
-        groups.Remove(GroupID);
-        return SUCCESS;
-    }
-    return FAILURE;
+    if (!groups.Exists(GroupID) || !groups.Exists(ReplacementID))
+        return FAILURE;
+    //pull groups from tree
+    Group &current_group = groups.Find(GroupID);
+    Group &replacement_group = groups.Find(ReplacementID);
+    //create arrays by the size of the groups:
+    Player *group, *replacement, *merged;
+    int n_group = current_group.GetPlayerById().GetTreeSize();
+    int n_replacement = replacement_group.GetPlayerById().GetTreeSize();
+    group = (Player *)malloc(n_group * sizeof(Player));
+    replacement = (Player *)malloc(n_replacement * sizeof(Player));
+    merged = (Player *)malloc((n_group + n_replacement) * sizeof(Player));
+    //group = current_group.GetPlayerById().GetData();
+    //replacement = replacement_group.GetPlayerById().GetData();
+    //merge arrays with mergeSort
+    int i=0,j=0;
+
+    //do merge sort on the full array
+
+    //     AVLTree<Player> players = current_group.GetPlayerById();
+    //     while (!players.IsEmpty()) // untill all players have been transfer
+    //     {
+    //         Player *root_player = players.GetRootData();
+    //         StatusType stAdd = replacment_group.AddPlayerToGroup(*root_player);
+    //         if (stAdd != SUCCESS) // if the add failed
+    //             return stAdd;
+    //         StatusType stRemove = current_group.RemovePlayerFromGroup(*root_player);
+    //         if (stRemove != SUCCESS) // if the remove failed
+    //             return stRemove;
+    //         players.Remove(root_player->getId()); // the tree isn't empty so should return true always
+    //     }
+    //     groups.Remove(GroupID);
+    //     return SUCCESS;
+    // }
+    // return FAILURE;
 }
 StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
 {
