@@ -15,42 +15,41 @@
 #define _234218_WET1
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-    /* Return Values
+/* Return Values
  * ----------------------------------- */
-    typedef enum
-    {
-        SUCCESS = 0,
-        FAILURE = -1,
-        ALLOCATION_ERROR = -2,
-        INVALID_INPUT = -3
-    } StatusType;
+typedef enum {
+    SUCCESS = 0,
+    FAILURE = -1,
+    ALLOCATION_ERROR = -2,
+    INVALID_INPUT = -3
+} StatusType;
 
-    void *Init();
 
-    StatusType AddGroup(void *DS, int GroupID);
+void *Init();
 
-    StatusType AddPlayer(void *DS, int PlayerID, int GroupID, int Level);
+StatusType AddGroup(void *DS, int GroupID);
 
-    StatusType RemovePlayer(void *DS, int PlayerID);
+StatusType AddPlayer(void *DS, int PlayerID, int GroupID, int Level);
 
-    StatusType ReplaceGroup(void *DS, int GroupID, int ReplacementID);
+StatusType RemovePlayer(void *DS, int PlayerID);
 
-    StatusType IncreaseLevel(void *DS, int PlayerID, int LevelIncrease);
+StatusType ReplaceGroup(void *DS, int GroupID, int ReplacementID);
 
-    StatusType GetHighestLevel(void *DS, int GroupID, int *PlayerID);
+StatusType IncreaseLevel(void *DS, int PlayerID, int LevelIncrease);
 
-    StatusType GetGroupsHighestLevel(void *DS, int numOfGroups, int **Players);
+StatusType GetHighestLevel(void *DS, int GroupID, int *PlayerID);
 
-    StatusType GetAllPlayersByLevel(void *DS, int GroupID, int **Players, int *numOfPlayers);
+StatusType GetAllPlayersByLevel(void *DS, int GroupID, int **Players, int *numOfPlayers);
 
-    void Quit(void **DS);
+StatusType GetGroupsHighestLevel(void *DS, int numOfGroups, int **Players);
+
+void Quit(void** DS);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*_234218_WET1 */
+#endif    /*_234218_WET1 */
