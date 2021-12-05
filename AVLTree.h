@@ -326,6 +326,13 @@ private:
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
+    AVLTree(int *keys, T **data, int size) // Sorted Array to AVL Tree Constructor
+    {
+        AVLNode<T> *min = nullptr, *max = nullptr;
+        root = SortedArrayToAVL_aux(keys, data, 0, size, min, max, size);
+        highest = max;
+        lowest = min;
+    } 
     ~AVLTree() = default;
     AVLNode<T> *GetRoot() const
     {
@@ -459,6 +466,7 @@ public:
         GetKeysArray_AUX(root, array, &index);
         return array;
     }
+    /*
     AVLTree<T> *SortedArrayToAVL(int *keys, T **data, int size)
     {
         AVLNode<T> *min = nullptr, *max = nullptr;
@@ -469,6 +477,7 @@ public:
         tree->SetLowest(min);
         return tree;
     }
+    */
 
     friend class Group;
     friend class Player;

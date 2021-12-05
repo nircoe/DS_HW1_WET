@@ -1,0 +1,59 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0.0"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "DS_Wet_1",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "DS_Wet_1_Staff_Test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-DS_Wet_1_Staff_Test-Debug-555c69933021fb5ce38d.json",
+					"name" : "DS_Wet_1_Staff_Test",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/nircoe/Desktop/DS_HW1_WET/build",
+		"source" : "/home/nircoe/Desktop/DS_HW1_WET"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 1
+	}
+}
