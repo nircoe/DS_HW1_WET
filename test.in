@@ -1,0 +1,15 @@
+Init
+AddGroup 1
+AddPlayer 1 1 1
+AddPlayer 2 2 4
+AddGroup 2
+AddGroup 2
+AddPlayer 2 2 4
+GetGroupsHighestLevel 2
+ReplaceGroup 1 2
+GetHighestLevel 2
+IncreaseLevel 1 5
+GetHighestLevel 2
+RemovePlayer 2
+GetAllPlayersByLevel -1
+Quit
