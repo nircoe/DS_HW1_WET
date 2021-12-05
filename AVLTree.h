@@ -458,11 +458,10 @@ public:
         GetKeysArray_AUX(root, array, &index);
         return array;
     }
-    AVLTree<T> *SortedArrayToAVL(int *keys, T **data)
+    AVLTree<T> *SortedArrayToAVL(int *keys, T **data, int size)
     {
-        int n = sizeof(keys) / sizeof(keys[0]);
         AVLNode<T> *min = nullptr, *max = nullptr;
-        AVLNode<T> *root = SortedArrayToAVL_aux(keys, data, 0, n - 1, min, max, n-1);
+        AVLNode<T> *root = SortedArrayToAVL_aux(keys, data, 0, size, min, max, size);
         AVLTree<T> *tree = new AVLTree<T>;
         tree->Insert(root->GetKey(), *(root->GetData()));
         tree->SetHighest(max);
