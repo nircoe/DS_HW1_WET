@@ -11,7 +11,7 @@ class PlayersManager
     AVLTree<Player> players_by_id;
     AVLTree<AVLTree<Player>> players_by_level;
     AVLTree<Group> groups;
-    StatusType GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> tree, int **Players, int *numOfPlayers);
+    StatusType GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> *tree, int **Players, int *numOfPlayers);
 
 public:
     PlayersManager();

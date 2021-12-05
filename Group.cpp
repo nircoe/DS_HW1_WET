@@ -8,7 +8,7 @@ Group::Group(int id) : id(id)
 }
 StatusType Group::AddPlayerToGroup(Player p)
 {
-    if (!players_by_id.Exists(p.getId()))
+    if (players_by_id.Exists(p.getId()))
         return FAILURE;
     if (!players_by_id.Insert(p.getId(), p)) // if Insert return false => allocation error
         return ALLOCATION_ERROR;
@@ -40,14 +40,18 @@ StatusType Group::RemovePlayerFromGroup(Player p)
     return SUCCESS;
 }
 
-AVLTree<Player> Group::GetPlayerById() const
+AVLTree<Player>* Group::GetPlayerById()
 {
-    return players_by_id;
+    if (this != 0)
+        return &players_by_id;
+    return nullptr;
 }
 
-AVLTree<AVLTree<Player>> Group::GetPlayerByLevel() const
+AVLTree<AVLTree<Player>>* Group::GetPlayerByLevel()
 {
-    return players_by_level;
+    if (this != 0)
+        return &players_by_level;
+    return nullptr;
 }
 void Group::SetTrees(AVLTree<Player> &by_id, AVLTree<AVLTree<Player>> &by_level)
 {

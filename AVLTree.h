@@ -21,25 +21,24 @@ template <typename T>
 class AVLNode
 {
     int key;
-    T data;
+    T *data;
     AVLNode *right;
     AVLNode *left;
     AVLNode *parent;
     int height;
 
     AVLNode();
-    AVLNode(int key, const T &data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
+    AVLNode(int key, const T *data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
     ~AVLNode() = default;
-    int GetKey() const { return (this == 0) ? key : -1; }
-    T *GetData() { return &data; }
-    T &GetDataByRef() { return data; }
+    int GetKey() const { return (this != 0) ? key : -1; }
+    T *GetData() { return data; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
     AVLNode *GetLeft() const { return left; }
     void SetRight(AVLNode *new_right) { right = new_right; }
     AVLNode *GetRight() const { return right; }
     void SetParent(AVLNode *new_parent) { parent = new_parent; }
     AVLNode *GetParent() const { return parent; }
-    int GetHeight() const { return (this == 0) ? height : -1; }
+    int GetHeight() const { return (this != 0) ? height : -1; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
     void updateHeight() { this->height = 1 + std::max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
 
@@ -369,22 +368,16 @@ public:
         AVLNode<T> *node = Find_aux(this->root, key);
         if (node)
             return node->GetData();
-        throw FAILURE_exception();
+        return nullptr;
         // return nullptr;
     }
     bool Exists(int key)
     {
-        try
-        {
-            Find(key);
-        }
-        catch (FAILURE_exception &e) // goes here only if doesn't Exist
-        {
+        if(Find(key) == nullptr)
             return false;
-        }
         return true; // didn't go to the catch => it Exist
     }
-    bool Insert(int key, const T data = NULL)
+    bool Insert(int key, const T *data = nullptr)
     {
         AVLNode<T> *new_node = new AVLNode<T>(key, data);
         if (!new_node)
@@ -496,8 +489,8 @@ void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size)
     if (!node || *index >= size)
         return;
     LTRInOrderForGroups(node->GetLeft(), array, index, size);
-    if (node->GetDataByRef().GetPlayerById().GetTreeSize() > 0)
-        *array[(*index)++] = node->GetDataByRef().GetPlayerByLevel().GetHighest()->GetLowest()->getId();
+    if (node->GetDataByRef().GetPlayerById()->GetTreeSize() > 0)
+        *array[(*index)++] = node->GetData()->GetPlayerByLevel()->GetHighest()->GetLowest()->getId();
     // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group
     LTRInOrderForGroups(node->GetRight(), array, index, size);
 }
