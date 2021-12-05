@@ -190,7 +190,8 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
                 i2++;
                 i3++;
             }
-            AVLTree<Player> *merged_tree_sub = merged_tree_sub->SortedArrayToAVL(merged_keys_sub, merged_sub);
+            int merged_sub_size = n_group_sub + n_replacement_sub;
+            AVLTree<Player> *merged_tree_sub = merged_tree_sub->SortedArrayToAVL(merged_keys_sub, merged_sub, merged_sub_size - 1);
             merged_by_level[k] = merged_tree_sub;
             merged_keys[k] = l1;
         }
