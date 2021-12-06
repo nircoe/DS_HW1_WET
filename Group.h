@@ -19,8 +19,8 @@ public:
     Group(const Group &) = default;
     ~Group() = default;
 
-    StatusType AddPlayerToGroup(Player p);
-    StatusType RemovePlayerFromGroup(Player p);
+    StatusType AddPlayerToGroup(Player *p);
+    StatusType RemovePlayerFromGroup(Player *p);
     AVLTree<Player>* GetPlayerById();
     AVLTree<AVLTree<Player>>* GetPlayerByLevel();
     void SetTrees(AVLTree<Player> &players_by_id, AVLTree<AVLTree<Player>> &players_by_level);

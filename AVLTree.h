@@ -28,7 +28,7 @@ class AVLNode
     int height;
 
     AVLNode();
-    AVLNode(int key, const T *data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
+    AVLNode(int key, T *data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
     ~AVLNode() = default;
     int GetKey() const { return (this != 0) ? key : -1; }
     T *GetData() { return data; }
@@ -296,7 +296,7 @@ private:
 
         //Get the middle element and make it root
         int mid = (start + end) / 2;
-        AVLNode<T> *root = new AVLNode<T>(keys[mid], *data[mid]);
+        AVLNode<T> *root = new AVLNode<T>(keys[mid], data[mid]);
         if (mid == 0)
             min = root;
         else if (mid == last_index)
@@ -377,7 +377,7 @@ public:
             return false;
         return true; // didn't go to the catch => it Exist
     }
-    bool Insert(int key, const T *data = nullptr)
+    bool Insert(int key, T *data = nullptr)
     {
         AVLNode<T> *new_node = new AVLNode<T>(key, data);
         if (!new_node)
@@ -489,8 +489,12 @@ void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size)
     if (!node || *index >= size)
         return;
     LTRInOrderForGroups(node->GetLeft(), array, index, size);
-    if (node->GetDataByRef().GetPlayerById()->GetTreeSize() > 0)
-        *array[(*index)++] = node->GetData()->GetPlayerByLevel()->GetHighest()->GetLowest()->getId();
+    if (node->GetData()->GetPlayerById()->GetTreeSize() > 0)
+    {
+        int id = node->GetData()->GetPlayerByLevel()->GetHighest()->GetLowest()->getId();
+        *array[*index] = id;
+        ++(*index);
+    }
     // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group
     LTRInOrderForGroups(node->GetRight(), array, index, size);
 }
@@ -501,7 +505,7 @@ void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // left 
     if (!node)
         return;
     LTRInOrderForPlayers(node->GetLeft(), array, index);
-    *array[(*index)++] = node->GetDataByRef().getId();
+    *array[(*index)++] = node->GetData()->getId();
     LTRInOrderForPlayers(node->GetRight(), array, index);
 }
 
@@ -511,7 +515,7 @@ void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // right
     if (!node)
         return;
     RTLInOrderForPlayers(node->GetRight(), array, index);
-    LTRInOrderForPlayers(node->GetDataByRef().GetRoot(), array, index);
+    LTRInOrderForPlayers(node->GetData()->GetRoot(), array, index);
     RTLInOrderForPlayers(node->GetLeft(), array, index);
 }
 
