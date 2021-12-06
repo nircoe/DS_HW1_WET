@@ -214,25 +214,48 @@ private:
                     //disconnect current from his parent
                     AVLNode<T> *parent = current->GetParent();
                     if (parent) //current is not the root of the tree
+                    {
                         parent->GetLeft() == current ? parent->SetLeft(nullptr) : parent->SetRight(nullptr);
-                    current = nullptr;
+                        current = parent;
+                    }
+                    delete child;
+                    //current = nullptr;
                 }
                 else //node has one child
                 {
                     //copy content of child to current node
+                    if(highest == child)
+                        highest = current;
+                    if(lowest == child)
+                        lowest = current;
+                    T *temp = current->data;
                     current->key = child->key;
                     current->data = child->data;
-                    current->SetLeft(nullptr);
-                    current->SetRight(nullptr);
+                    child->data = temp;
+                    current->SetLeft(child->left);
+                    current->SetRight(child->right);
+                    if(child->left)
+                        child->left->SetParent(current);
+                    if(child->right)
+                        child->right->SetParent(current);
+                    child->SetLeft(nullptr);
+                    child->SetParent(nullptr);
+                    child->SetRight(nullptr);
+                    delete child;
+                    //child = nullptr;
                 }
-                delete child;
-                child = nullptr;
             }
             else //node has two children
             {
+                T *temp = current->data;
                 AVLNode<T> *replacement = GetGreatestNode(current->left);
+                if(replacement == highest)
+                    highest = current;
+                if(replacement == lowest)
+                    lowest = current;
                 current->key = replacement->key;
                 current->data = replacement->data;
+                replacement->data = temp;
                 current->left = RemoveNode(current->left, replacement->key);
 
                 /* previous code :
@@ -332,7 +355,33 @@ public:
         highest = max;
         lowest = min;
     } 
-    ~AVLTree() = default;
+    ~AVLTree()
+    {
+        if(root == highest && highest == lowest)
+            delete this->root;
+        else if(root == highest)
+        {
+            delete this->root;
+            delete this->lowest;
+        }
+        else if(root == lowest)
+        {
+            delete this->root;
+            delete this->lowest;
+        }
+        else if(highest == lowest)
+        {
+            delete this->root;
+            delete this->highest;
+        }
+        else
+        {
+            delete this->root;
+            delete this->highest;
+            delete this->lowest;
+        }
+        size = -1;
+    }
     AVLNode<T> *GetRoot() const
     {
         return root;
@@ -408,31 +457,31 @@ public:
     bool Remove(int key)
     {
         // if we remove the highest :
-        if (highest->GetKey() == key) // change the highest if he will removed
+        if (this->highest->GetKey() == key) // change the highest if he will removed
         {
-            if (highest->GetParent() == nullptr)
+            if (this->highest->GetParent() == nullptr)
             {
                 AVLNode<T> *new_highest = highest->GetLeft();
                 if (new_highest)
                     while (new_highest->GetRight() != nullptr)
                         new_highest = new_highest->GetRight();
-                highest = new_highest;
+                this->highest = new_highest;
             }
             else
-                highest = highest->GetParent();
+                this->highest = highest->GetParent();
         }
         // if we remove the lowest :
-        if (lowest->GetKey() == key) // change the lowest if he will removed
+        if (this->lowest->GetKey() == key) // change the lowest if he will removed
         {
-            if (lowest->GetParent() == nullptr)
+            if (this->lowest->GetParent() == nullptr)
             {
                 AVLNode<T> *new_lowest = lowest->GetRight();
                 while (new_lowest->GetLeft() != nullptr)
                     new_lowest = new_lowest->GetLeft();
-                lowest = new_lowest;
+                this->lowest = new_lowest;
             }
             else
-                lowest = lowest->GetParent();
+                this->lowest = lowest->GetParent();
         }
         root = RemoveNode(root, key); // it will return nullptr only if root == nullptr
         if (!root)                    // RemoveNode failure, root was nullptr, tree is empty
@@ -505,7 +554,7 @@ void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // left 
     if (!node)
         return;
     LTRInOrderForPlayers(node->GetLeft(), array, index);
-    *array[(*index)++] = node->GetData()->getId();
+    (*array)[(*index)++] = node->GetData()->getId();
     LTRInOrderForPlayers(node->GetRight(), array, index);
 }
 
