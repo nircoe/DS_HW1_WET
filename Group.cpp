@@ -6,6 +6,10 @@ Group::Group(int id) : id(id)
     players_by_id = AVLTree<Player>();
     players_by_level = AVLTree<AVLTree<Player>>();
 }
+int Group::GetId()
+{
+    return id;
+}
 StatusType Group::AddPlayerToGroup(Player p)
 {
     if (!players_by_id.Exists(p.getId()))
