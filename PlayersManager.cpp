@@ -1,13 +1,16 @@
 #include "PlayersManager.h"
 #include <iostream>
 
-PlayersManager::PlayersManager() : players_by_id(AVLTree<Player>()), players_by_level(AVLTree<AVLTree<Player>>()), groups(AVLTree<Group>()) {}
+PlayersManager::PlayersManager() : players_by_id(AVLTree<Player>()),
+                                   players_by_level(AVLTree<AVLTree<Player>>()),
+                                   groups(AVLTree<Group>()),
+                                   empty_groups(AVLTree<Group>()) {}
 
 StatusType PlayersManager::AddGroup(int GroupID)
 {
     if (GroupID <= 0)
         return INVALID_INPUT;
-    if (groups.Exists(GroupID)) // group already exists
+    if (groups.Exists(GroupID) || empty_groups.Exists(GroupID)) // group already exists
         return FAILURE;
     if (!groups.Insert(GroupID, new Group(GroupID))) // check if Insert return false => only on allocation error
         return ALLOCATION_ERROR;
@@ -17,9 +20,22 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int Level)
 {
     if (PlayerID <= 0 || GroupID <= 0 || Level < 0)
         return INVALID_INPUT;
-    if (players_by_id.Exists(PlayerID) || !groups.Exists(GroupID))
+    if (players_by_id.Exists(PlayerID))
         return FAILURE;
-    Group *g = groups.Find(GroupID); // doesn't gonna throw because its Exists
+    Group *g;
+    bool is_first_player = false;
+    if (groups.Exists(GroupID))
+    {
+        g = groups.Find(GroupID);
+    }
+    else if (empty_groups.Exists(GroupID))
+    {
+        g = empty_groups.Find(GroupID);
+        is_first_player = true;
+    }
+    else
+        return FAILURE;
+    //Group *g = groups.Find(GroupID); // doesn't gonna throw because its Exists
     Player *p = new Player(PlayerID, Level, g);
     if (!players_by_id.Insert(PlayerID, p)) // check if Insert return false => only on allocation error
         return ALLOCATION_ERROR;
@@ -37,6 +53,13 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int Level)
     StatusType st = g->AddPlayerToGroup(p);
     if (st != SUCCESS) // if AddPlayerToGroup didn't succeed so return the StatusType that the function returned
         return st;
+    if (is_first_player) // move group from empty groups to not empty groups tree
+    {
+        if (!empty_groups.Remove(GroupID))
+            return ALLOCATION_ERROR;
+        if (!groups.Insert(GroupID, g))
+            return ALLOCATION_ERROR;
+    }
     return SUCCESS;
 }
 StatusType PlayersManager::RemovePlayer(int PlayerID)
@@ -50,6 +73,13 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
     StatusType st = g->RemovePlayerFromGroup(p);
     if (st != SUCCESS) // check if the RemovePlayerFromGroup succeed
         return st;
+    if (g->GetPlayerById()->GetTreeSize() == 0) //we removed the last player
+    {
+        if (!groups.Remove(g->GetId()))
+            return FAILURE;
+        if (!empty_groups.Insert(g->GetId(), g))
+            return FAILURE;
+    }
     AVLTree<Player> *p_tree = players_by_level.Find(p->getLevel());
     if (!p_tree->Remove(p->getId())) // Remove will return false only if the tree is empty, not supposed to happened
         return FAILURE;
@@ -149,11 +179,13 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
         {
             merged_by_level[k] = group_by_level[i];
             merged_keys[k] = l1;
+            i++;
         }
         else if (l1 > l2)
         {
             merged_by_level[k] = replacement_by_level[j];
             merged_keys[k] = l2;
+            j++;
         }
         else //trees of the same level, we need to merge them first
         {
@@ -226,6 +258,10 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     AVLTree<AVLTree<Player>> *merged_tree_by_level = new AVLTree<AVLTree<Player>>(merged_keys, merged_by_level, merged_size - 1);
     //AVLTree<AVLTree<Player>> *merged_tree_by_level = merged_tree_by_level->SortedArrayToAVL(merged_keys, merged_by_level, merged_size - 1);
     replacement_group->SetTrees(*merged_tree_by_id, *merged_tree_by_level);
+    if (!groups.Remove(GroupID))
+        return FAILURE;
+    if (!empty_groups.Insert(GroupID, current_group))
+        return FAILURE;
     return SUCCESS;
 }
 StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
@@ -241,7 +277,7 @@ StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
     g->RemovePlayerFromGroup(p);
     p_tree->Remove(p->getId());
     p->incrementLevel(LevelIncrease);
-
+    players_by_id.Remove(p->getId());
     //re-inserting the player to the level trees
     if (players_by_level.Exists(p->getLevel())) //the new level tree already exists
     {
@@ -255,6 +291,7 @@ StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
         delete p_tree;
     }
     g->AddPlayerToGroup(p);
+    players_by_id.Insert(p->getId(), p);
     return SUCCESS;
 }
 StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
@@ -275,10 +312,10 @@ StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     }
     if (!groups.Exists(GroupID)) // the group doesn't exist
         return FAILURE;
-    Group *g = groups.Find(GroupID);                                                   // not gonna throw because it is Exists
+    Group *g = groups.Find(GroupID);                                                    // not gonna throw because it is Exists
     AVLTree<AVLTree<Player>> *group_players_level_tree = g->GetPlayerByLevel();         // get the AVLTree of players by level of this group
     AVLTree<Player> *group_highest_level_tree = group_players_level_tree->GetHighest(); // get the highest node in the tree
-    if (!group_highest_level_tree)                                                     // there is no players in this group
+    if (!group_highest_level_tree)                                                      // there is no players in this group
         return SUCCESS;
     Player *highest_player = group_highest_level_tree->GetLowest(); // get the lowest node in the tree => the highest player
     if (!highest_player)                                            // there is no players in this group
@@ -287,17 +324,23 @@ StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     return SUCCESS;
 }
 
-StatusType PlayersManager::GetGroupsHighestLevel(int numOfGroups, int **Players)
+int* PlayersManager::GetGroupsHighestLevel(int numOfGroups, StatusType *st)
 {
-    if (Players == nullptr || numOfGroups < 1)
-        return INVALID_INPUT;
-    Players = new int *[1];
-    Players[0] = new int[numOfGroups];
+    if (numOfGroups < 1)
+    {
+        *st = INVALID_INPUT;
+        return nullptr;
+    }
+    int *Players = (int *)malloc(numOfGroups * sizeof(int));
     int index = 0;
-    LTRInOrderForGroups<Group>(groups.GetRoot(), Players, &index, numOfGroups);
+    LTRInOrderForGroups<Group>(groups.GetRoot(), &Players, &index, numOfGroups);
     if (index < numOfGroups) // maybe delete Players
-        return FAILURE;
-    return SUCCESS;
+        {
+            *st = FAILURE;
+            return nullptr;
+        }
+    *st = SUCCESS;
+    return Players;
 }
 
 StatusType PlayersManager::GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> *tree, int **Players, int *numOfPlayers)

@@ -11,6 +11,7 @@ class PlayersManager
     AVLTree<Player> players_by_id;
     AVLTree<AVLTree<Player>> players_by_level;
     AVLTree<Group> groups;
+    AVLTree<Group> empty_groups;
     StatusType GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> *tree, int **Players, int *numOfPlayers);
 
 public:
@@ -22,7 +23,7 @@ public:
     StatusType ReplaceGroup(int GroupID, int ReplacementID);
     StatusType IncreaseLevel(int PlayerID, int LevelIncrease);
     StatusType GetHighestLevel(int GroupID, int *PlayerID);
-    StatusType GetGroupsHighestLevel(int numOfGroups, int **Players);
+    int* GetGroupsHighestLevel(int numOfGroups, StatusType *st);
     StatusType GetAllPlayersByLevel(int GroupID, int **Players, int *numOfPlayers);
     void Quit();
 };

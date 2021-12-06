@@ -19,6 +19,7 @@ public:
     Group(const Group &) = default;
     ~Group() = default;
 
+    int GetId();
     StatusType AddPlayerToGroup(Player *p);
     StatusType RemovePlayerFromGroup(Player *p);
     AVLTree<Player>* GetPlayerById();
