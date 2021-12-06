@@ -291,7 +291,8 @@ StatusType PlayersManager::GetGroupsHighestLevel(int numOfGroups, int **Players)
 {
     if (Players == nullptr || numOfGroups < 1)
         return INVALID_INPUT;
-    *Players = new int[numOfGroups];
+    Players = new int *[1];
+    Players[0] = new int[numOfGroups];
     int index = 0;
     LTRInOrderForGroups<Group>(groups.GetRoot(), Players, &index, numOfGroups);
     if (index < numOfGroups) // maybe delete Players

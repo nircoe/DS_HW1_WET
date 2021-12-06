@@ -492,7 +492,7 @@ void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size)
     if (node->GetData()->GetPlayerById()->GetTreeSize() > 0)
     {
         int id = node->GetData()->GetPlayerByLevel()->GetHighest()->GetLowest()->getId();
-        *array[*index] = id;
+        array[0][*index] = id;
         ++(*index);
     }
     // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group

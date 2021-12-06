@@ -52,7 +52,9 @@ StatusType GetGroupsHighestLevel(void *DS, int numOfGroups, int **Players)
 {
     if (DS == nullptr)
         return INVALID_INPUT;
-    return ((PlayersManager *)DS)->GetGroupsHighestLevel(numOfGroups, Players);
+    StatusType st;
+    Players = ((PlayersManager *)DS)->GetGroupsHighestLevel(numOfGroups, Players, &st);
+    return st;
 }
 
 StatusType GetAllPlayersByLevel(void *DS, int GroupID, int **Players, int *numOfPlayers)
