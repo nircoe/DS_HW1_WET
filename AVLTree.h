@@ -21,25 +21,24 @@ template <typename T>
 class AVLNode
 {
     int key;
-    T data;
+    T *data;
     AVLNode *right;
     AVLNode *left;
     AVLNode *parent;
     int height;
 
     AVLNode();
-    AVLNode(int key, const T &data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
+    AVLNode(int key, T *data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
     ~AVLNode() = default;
-    int GetKey() const { return (this == 0) ? key : -1; }
-    T *GetData() { return &data; }
-    T &GetDataByRef() { return data; }
+    int GetKey() const { return (this != 0) ? key : -1; }
+    T *GetData() { return data; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
     AVLNode *GetLeft() const { return left; }
     void SetRight(AVLNode *new_right) { right = new_right; }
     AVLNode *GetRight() const { return right; }
     void SetParent(AVLNode *new_parent) { parent = new_parent; }
     AVLNode *GetParent() const { return parent; }
-    int GetHeight() const { return (this == 0) ? height : -1; }
+    int GetHeight() const { return (this != 0) ? height : -1; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
     void updateHeight() { this->height = 1 + std::max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
 
@@ -297,7 +296,7 @@ private:
 
         //Get the middle element and make it root
         int mid = (start + end) / 2;
-        AVLNode<T> *root = new AVLNode<T>(keys[mid], *data[mid]);
+        AVLNode<T> *root = new AVLNode<T>(keys[mid], data[mid]);
         if (mid == 0)
             min = root;
         else if (mid == last_index)
@@ -326,6 +325,13 @@ private:
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
+    AVLTree(int *keys, T **data, int size) // Sorted Array to AVL Tree Constructor
+    {
+        AVLNode<T> *min = nullptr, *max = nullptr;
+        root = SortedArrayToAVL_aux(keys, data, 0, size, min, max, size);
+        highest = max;
+        lowest = min;
+    } 
     ~AVLTree() = default;
     AVLNode<T> *GetRoot() const
     {
@@ -362,22 +368,16 @@ public:
         AVLNode<T> *node = Find_aux(this->root, key);
         if (node)
             return node->GetData();
-        throw FAILURE_exception();
+        return nullptr;
         // return nullptr;
     }
     bool Exists(int key)
     {
-        try
-        {
-            Find(key);
-        }
-        catch (FAILURE_exception &e) // goes here only if doesn't Exist
-        {
+        if(Find(key) == nullptr)
             return false;
-        }
         return true; // didn't go to the catch => it Exist
     }
-    bool Insert(int key, const T data = NULL)
+    bool Insert(int key, T *data = nullptr)
     {
         AVLNode<T> *new_node = new AVLNode<T>(key, data);
         if (!new_node)
@@ -459,17 +459,18 @@ public:
         GetKeysArray_AUX(root, array, &index);
         return array;
     }
-    AVLTree<T> *SortedArrayToAVL(int *keys, T **data)
+    /*
+    AVLTree<T> *SortedArrayToAVL(int *keys, T **data, int size)
     {
-        int n = sizeof(keys) / sizeof(keys[0]);
         AVLNode<T> *min = nullptr, *max = nullptr;
-        AVLNode<T> *root = SortedArrayToAVL_aux(keys, data, 0, n - 1, min, max, n - 1);
+        AVLNode<T> *root = SortedArrayToAVL_aux(keys, data, 0, size, min, max, size);
         AVLTree<T> *tree = new AVLTree<T>;
         tree->Insert(root->GetKey(), *(root->GetData()));
         tree->SetHighest(max);
         tree->SetLowest(min);
         return tree;
     }
+    */
 
     friend class Group;
     friend class Player;
@@ -488,8 +489,12 @@ void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size)
     if (!node || *index >= size)
         return;
     LTRInOrderForGroups(node->GetLeft(), array, index, size);
-    // if (node->GetDataByRef().GetPlayerById().GetTreeSize() > 0)
-    *array[(*index)++] = node->GetDataByRef().GetPlayerByLevel().GetHighest()->GetLowest()->getId();
+    // if (node->GetData()->GetPlayerById()->GetTreeSize() > 0)
+    // {
+        int id = node->GetData()->GetPlayerByLevel()->GetHighest()->GetLowest()->getId();
+        *array[*index] = id;
+        ++(*index);
+    // }
     // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group
     LTRInOrderForGroups(node->GetRight(), array, index, size);
 }
@@ -500,7 +505,7 @@ void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // left 
     if (!node)
         return;
     LTRInOrderForPlayers(node->GetLeft(), array, index);
-    *array[(*index)++] = node->GetDataByRef().getId();
+    *array[(*index)++] = node->GetData()->getId();
     LTRInOrderForPlayers(node->GetRight(), array, index);
 }
 
@@ -510,7 +515,7 @@ void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // right
     if (!node)
         return;
     RTLInOrderForPlayers(node->GetRight(), array, index);
-    LTRInOrderForPlayers(node->GetDataByRef().GetRoot(), array, index);
+    LTRInOrderForPlayers(node->GetData()->GetRoot(), array, index);
     RTLInOrderForPlayers(node->GetLeft(), array, index);
 }
 
