@@ -3,8 +3,15 @@
 
 void *Init()
 {
-    PlayersManager *DS = new PlayersManager();
-    return (void *)DS;
+    try
+    {
+        PlayersManager *DS = new PlayersManager();
+        return (void *)(DS);
+    }
+    catch(const std::exception& e)
+    {
+        return NULL;
+    }
 }
 StatusType AddGroup(void *DS, int GroupID)
 {
@@ -68,6 +75,7 @@ StatusType GetAllPlayersByLevel(void *DS, int GroupID, int **Players, int *numOf
 
 void Quit(void **DS)
 {
-    delete ((PlayersManager *)(*DS));
+    PlayersManager *s = (PlayersManager *)*DS;
+    delete s;
     *DS = NULL;
 }

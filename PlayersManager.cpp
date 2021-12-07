@@ -12,7 +12,8 @@ StatusType PlayersManager::AddGroup(int GroupID)
         return INVALID_INPUT;
     if (groups.Exists(GroupID) || empty_groups.Exists(GroupID)) // group already exists
         return FAILURE;
-    if (!groups.Insert(GroupID, new Group(GroupID))) // check if Insert return false => only on allocation error
+    Group *g = new Group(GroupID);
+    if (!empty_groups.Insert(GroupID, g)) // check if Insert return false => only on allocation error
         return ALLOCATION_ERROR;
     return SUCCESS;
 }
@@ -262,7 +263,14 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     merged_size = n_group + n_replacement;
     AVLTree<AVLTree<Player>> *merged_tree_by_level = new AVLTree<AVLTree<Player>>(merged_keys, merged_by_level, merged_size - 1);
     //AVLTree<AVLTree<Player>> *merged_tree_by_level = merged_tree_by_level->SortedArrayToAVL(merged_keys, merged_by_level, merged_size - 1);
-    replacement_group->SetTrees(*merged_tree_by_id, *merged_tree_by_level);
+    replacement_group->SetTrees(merged_tree_by_id, merged_tree_by_level);
+    delete group;
+    delete replacement;
+    delete merged;
+    delete group_by_level;
+    delete replacement_by_level;
+    delete merged_by_level;
+    delete merged_keys;
     if (!groups.Remove(GroupID))
         return FAILURE;
     //if (!empty_groups.Insert(GroupID, current_group))
@@ -319,7 +327,7 @@ StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     }
     if (!groups.Exists(GroupID)) // the group doesn't exist
         return FAILURE;
-    Group *g = groups.Find(GroupID);                                                    // not gonna throw because it is Exists
+    Group *g = groups.Find(GroupID);                                                   // not gonna throw because it is Exists
     AVLTree<AVLTree<Player>> *group_players_level_tree = g->GetPlayerByLevel();         // get the AVLTree of players by level of this group
     AVLTree<Player> *group_highest_level_tree = group_players_level_tree->GetHighest(); // get the highest node in the tree
     if (!group_highest_level_tree)                                                      // there is no players in this group

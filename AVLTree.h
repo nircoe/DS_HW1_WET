@@ -29,16 +29,28 @@ class AVLNode
 
     AVLNode();
     AVLNode(int key, T *data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
-    ~AVLNode() = default;
-    int GetKey() const { return (this != 0) ? key : -1; }
-    T *GetData() { return (this != 0) ? data : nullptr; }
+    ~AVLNode()
+    {
+        try
+        {
+            delete this->data;
+            //delete this->right;
+            //delete this->left;
+            //delete this->parent;
+            this->key = -1;
+            this->height = -1;
+        }
+        catch(const std::exception& e) { }
+    }
+    int GetKey() const { return (this == 0) ? -1 : key; }
+    T *GetData() { return (this == 0) ? nullptr : data; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
-    AVLNode *GetLeft() const { return (this != 0) ? left : nullptr; }
+    AVLNode *GetLeft() const { return (this == 0) ? nullptr : left; }
     void SetRight(AVLNode *new_right) { right = new_right; }
-    AVLNode *GetRight() const { return (this != 0) ? right : nullptr; }
+    AVLNode *GetRight() const { return (this == 0) ? nullptr : right; }
     void SetParent(AVLNode *new_parent) { parent = new_parent; }
-    AVLNode *GetParent() const { return (this != 0) ? parent : nullptr; }
-    int GetHeight() const { return (this != 0) ? height : -1; }
+    AVLNode *GetParent() const { return (this == 0) ? nullptr : parent; }
+    int GetHeight() const { return (this == 0) ? -1 : height; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
     void updateHeight() { this->height = 1 + std::max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
 
@@ -133,11 +145,12 @@ private:
     }
     AVLNode<T> *Find_aux(AVLNode<T> *current, int key)
     {
-        if (current)
+        if (current != nullptr) 
         {
-            if (current->GetKey() == key)
+            const int k = current->GetKey();
+            if (k == key)
                 return current; // Found the node :)
-            else if (key < current->GetKey())
+            else if (key < k)
                 return Find_aux(current->GetLeft(), key);
             else
                 return Find_aux(current->GetRight(), key);
@@ -218,6 +231,9 @@ private:
                         parent->GetLeft() == current ? parent->SetLeft(nullptr) : parent->SetRight(nullptr);
                         current = parent;
                     }
+                    child->SetParent(nullptr);
+                    child->SetLeft(nullptr);
+                    child->SetRight(nullptr);
                     delete child;
                     //current = nullptr;
                 }
@@ -345,6 +361,15 @@ private:
     {
         lowest = new_lowest;
     }
+    void PostOrderDelete(AVLNode<T> *node)
+    {
+        if (node != nullptr)
+        {
+            PostOrderDelete(node->GetLeft());
+            PostOrderDelete(node->GetRight());
+            delete node;
+        }
+    }
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
@@ -354,33 +379,38 @@ public:
         root = SortedArrayToAVL_aux(keys, data, 0, size, &min, &max, size);
         highest = max;
         lowest = min;
-    } 
+    }
     ~AVLTree()
     {
-        if(root == highest && highest == lowest)
-            delete this->root;
-        else if(root == highest)
+        try
         {
-            delete this->root;
-            delete this->lowest;
+            PostOrderDelete(root);
+            /*if (root == highest && highest == lowest)
+                delete this->root;
+            else if(root == highest)
+            {
+                delete this->root;
+                delete this->lowest;
+            }
+            else if(root == lowest)
+            {
+                delete this->root;
+                delete this->lowest;
+            }
+            else if(highest == lowest)
+            {
+                delete this->root;
+                delete this->highest;
+            }
+            else
+            {
+                delete this->root;
+                delete this->highest;
+                delete this->lowest;
+            }*/
+            size = -1;
         }
-        else if(root == lowest)
-        {
-            delete this->root;
-            delete this->lowest;
-        }
-        else if(highest == lowest)
-        {
-            delete this->root;
-            delete this->highest;
-        }
-        else
-        {
-            delete this->root;
-            delete this->highest;
-            delete this->lowest;
-        }
-        size = -1;
+        catch(const std::exception& e) { }
     }
     AVLNode<T> *GetRoot() const
     {
@@ -429,8 +459,8 @@ public:
     bool Insert(int key, T *data = nullptr)
     {
         AVLNode<T> *new_node = new AVLNode<T>(key, data);
-        if (!new_node)
-            return false; // ALLOCATION_ERROR
+        //if (!new_node)
+        //    return false; // ALLOCATION_ERROR
         if (!root)        //empty tree, special case
         {
             root = new_node;

@@ -1,0 +1,460 @@
+Init
+AddGroup 1199401442
+AddGroup 557725858
+GetGroupsHighestLevel 2
+RemovePlayer 1865875388
+AddPlayer 1685387815 557725858 8
+GetGroupsHighestLevel 1
+AddGroup 854908028
+AddPlayer 849449341 1199401442 1
+AddGroup 1935002697
+AddPlayer 849449341 854908028 4
+ReplaceGroup 1935002697 854908028
+RemovePlayer -2
+AddGroup 557725858
+ReplaceGroup 557725858 1073001637
+IncreaseLevel 1310105606 1
+AddPlayer 212765365 557725858 0
+RemovePlayer 849449341
+AddGroup 146418819
+RemovePlayer 212765365
+GetHighestLevel -5
+AddPlayer 1685387815 1199401442 6
+ReplaceGroup 557725858 1199401442
+AddGroup 1217689430
+ReplaceGroup 1217689430 146418819
+AddGroup 336095282
+RemovePlayer 1685387815
+AddGroup 890820043
+IncreaseLevel 1845439980 3
+GetAllPlayersByLevel -9
+AddGroup 962308129
+ReplaceGroup 890820043 146418819
+AddPlayer 1430268954 962308129 6
+GetAllPlayersByLevel -10
+AddPlayer 1656361835 336095282 6
+RemovePlayer 1430268954
+GetGroupsHighestLevel 5
+AddGroup 854908028
+AddGroup 1394374373
+IncreaseLevel 1656361835 3
+AddPlayer -2 962308129 8
+RemovePlayer 1656361835
+ReplaceGroup 854908028 1394374373
+GetAllPlayersByLevel 146418819
+IncreaseLevel 1236172486 2
+GetGroupsHighestLevel -7
+GetAllPlayersByLevel -3
+AddGroup 1199401442
+AddPlayer 401635324 962308129 2
+IncreaseLevel 384388443 7
+GetGroupsHighestLevel 1
+RemovePlayer 401635324
+IncreaseLevel 2128453321 3
+IncreaseLevel 76010245 8
+GetGroupsHighestLevel 2
+GetGroupsHighestLevel 4
+IncreaseLevel 1701890932 3
+RemovePlayer 1656932407
+ReplaceGroup 1730588942 336095282
+AddPlayer 1282150924 277692864 6
+GetHighestLevel 962308129
+AddGroup 92091855
+ReplaceGroup -3 146418819
+RemovePlayer 114332232
+RemovePlayer 1172616011
+ReplaceGroup 336095282 1394374373
+IncreaseLevel 1641435 1
+IncreaseLevel 384264269 9
+AddGroup 1917153904
+AddPlayer 178821628 956442569 5
+AddGroup 912191830
+IncreaseLevel 449636530 9
+AddGroup 580158301
+AddGroup 1844902994
+RemovePlayer 826354641
+IncreaseLevel 502820128 1
+IncreaseLevel 626126096 8
+AddGroup 1802177988
+ReplaceGroup 1844902994 1917153904
+ReplaceGroup 962308129 1394374373
+RemovePlayer 303760601
+ReplaceGroup 1802177988 580158301
+AddPlayer 1945526827 146418819 4
+IncreaseLevel 1945526827 7
+IncreaseLevel 1945526827 2
+AddPlayer 1710288054 1199401442 3
+GetGroupsHighestLevel 2
+RemovePlayer 1710288054
+IncreaseLevel 1945526827 9
+ReplaceGroup 912191830 580158301
+IncreaseLevel 1945526827 4
+RemovePlayer -5
+AddPlayer 1945526827 580158301 6
+AddGroup 2060478557
+ReplaceGroup 1199401442 1394374373
+RemovePlayer 1945526827
+GetAllPlayersByLevel -9
+AddPlayer 537290408 1917153904 5
+AddPlayer 1531885103 -4 6
+IncreaseLevel 537290408 4
+AddPlayer 1352120935 1917153904 0
+GetHighestLevel 580158301
+RemovePlayer 537290408
+AddPlayer 1905009309 92091855 4
+RemovePlayer 1352120935
+AddPlayer 369109619 1917153904 3
+AddPlayer 1895522510 1917153904 1
+ReplaceGroup 92091855 1917153904
+ReplaceGroup 146418819 2060478557
+GetGroupsHighestLevel 1
+IncreaseLevel 1895522510 1
+GetAllPlayersByLevel 0
+AddPlayer 1895522510 1394374373 7
+RemovePlayer 1895522510
+RemovePlayer 369109619
+RemovePlayer 1905009309
+IncreaseLevel 388501704 4
+RemovePlayer 623939866
+GetHighestLevel -9
+AddPlayer 1110036184 -2 6
+AddGroup 1917153904
+AddGroup 1964918174
+GetGroupsHighestLevel 8
+GetHighestLevel -9
+GetAllPlayersByLevel 2060478557
+GetHighestLevel -5
+ReplaceGroup 1917153904 580158301
+IncreaseLevel 191491542 3
+AddPlayer 1317747584 1964918174 0
+RemovePlayer 167201611
+AddPlayer 979253425 1964918174 4
+GetHighestLevel -1
+AddPlayer 1317747584 580158301 5
+IncreaseLevel 979253425 -9
+GetAllPlayersByLevel -7
+IncreaseLevel 1317747584 8
+IncreaseLevel 979253425 3
+RemovePlayer 979253425
+AddGroup 1231491960
+AddPlayer 238938841 2060478557 8
+ReplaceGroup 1394374373 -4
+AddGroup 525575963
+IncreaseLevel 1317747584 9
+RemovePlayer 816127582
+GetHighestLevel -2
+RemovePlayer 1317747584
+ReplaceGroup 1231491960 580158301
+AddGroup 604198848
+GetGroupsHighestLevel -6
+IncreaseLevel 238938841 6
+IncreaseLevel 238938841 9
+AddGroup 2023886358
+AddGroup 780085748
+GetHighestLevel 1964918174
+RemovePlayer 238938841
+IncreaseLevel 549457702 8
+ReplaceGroup 525575963 1964918174
+IncreaseLevel 36065819 3
+GetAllPlayersByLevel 0
+RemovePlayer 1768593415
+AddPlayer 450774434 604198848 8
+ReplaceGroup 1394374373 780085748
+IncreaseLevel 450774434 8
+RemovePlayer 450774434
+AddGroup 1229978778
+RemovePlayer 1886528344
+AddGroup 580158301
+ReplaceGroup 1964918174 780085748
+AddGroup 620664710
+GetGroupsHighestLevel 7
+GetAllPlayersByLevel -1
+ReplaceGroup 620664710 580158301
+RemovePlayer 1904488869
+AddPlayer 273371995 550995609 6
+ReplaceGroup 580158301 604198848
+ReplaceGroup 2023886358 1229978778
+AddPlayer 1788684788 604198848 6
+ReplaceGroup 255975398 1229978778
+AddPlayer 2079685095 780085748 3
+RemovePlayer 1788684788
+GetHighestLevel 2060478557
+ReplaceGroup 2060478557 1229978778
+RemovePlayer 2079685095
+GetGroupsHighestLevel 7
+IncreaseLevel 1333748023 5
+IncreaseLevel 1755406114 7
+IncreaseLevel 794822667 7
+ReplaceGroup 1229978778 780085748
+IncreaseLevel 1266119481 1
+AddGroup 1995775925
+AddPlayer 554623215 780085748 6
+GetGroupsHighestLevel 1
+AddGroup 854084053
+AddPlayer 430074545 854084053 2
+RemovePlayer 554623215
+IncreaseLevel 430074545 9
+AddGroup 354471251
+AddPlayer 230404893 1995775925 5
+GetGroupsHighestLevel 2
+RemovePlayer 230404893
+GetGroupsHighestLevel 1
+AddPlayer 2067636761 780085748 -4
+RemovePlayer 430074545
+RemovePlayer 1300426662
+IncreaseLevel 1578118730 5
+GetGroupsHighestLevel 5
+RemovePlayer 1618624876
+ReplaceGroup 780085748 604198848
+ReplaceGroup 1995775925 604198848
+IncreaseLevel 1637451492 4
+IncreaseLevel 1411356791 7
+AddPlayer 1085503136 854084053 0
+AddGroup 827751556
+RemovePlayer 1085503136
+ReplaceGroup 604198848 604198848
+ReplaceGroup 354471251 354471251
+AddPlayer 1701586535 854084053 7
+RemovePlayer 1701586535
+RemovePlayer 1091019972
+GetGroupsHighestLevel 3
+ReplaceGroup 854084053 827751556
+IncreaseLevel 284858277 7
+ReplaceGroup 827751556 354471251
+RemovePlayer 2104462037
+AddGroup 1340694431
+ReplaceGroup 604198848 354471251
+AddPlayer 767411943 354471251 8
+IncreaseLevel 767411943 9
+GetHighestLevel 354471251
+GetHighestLevel 354471251
+RemovePlayer 767411943
+ReplaceGroup 1340694431 354471251
+RemovePlayer 955909135
+ReplaceGroup -8 354471251
+RemovePlayer 733115462
+ReplaceGroup -5 354471251
+RemovePlayer 1008174386
+RemovePlayer 853293348
+GetAllPlayersByLevel 354471251
+AddPlayer 253696618 354471251 -6
+IncreaseLevel 848369754 7
+GetGroupsHighestLevel 7
+ReplaceGroup 354471251 354471251
+RemovePlayer 500974349
+ReplaceGroup -2 354471251
+IncreaseLevel 250535855 6
+RemovePlayer 1269232650
+IncreaseLevel 1078635620 7
+AddPlayer 1613025960 354471251 1
+AddPlayer 1248676891 354471251 3
+GetAllPlayersByLevel -1
+AddPlayer 71001821 354471251 4
+RemovePlayer 1248676891
+ReplaceGroup 354471251 -9
+AddPlayer 621319229 354471251 4
+AddGroup 47643690
+IncreaseLevel 1613025960 6
+IncreaseLevel 1613025960 6
+AddPlayer 1234338354 0 4
+GetGroupsHighestLevel 1
+ReplaceGroup 47643690 354471251
+GetHighestLevel 0
+IncreaseLevel 1613025960 3
+AddPlayer 1613025960 354471251 9
+RemovePlayer 621319229
+AddGroup 354471251
+GetHighestLevel 1431628233
+ReplaceGroup 354471251 -3
+GetGroupsHighestLevel 1
+ReplaceGroup 354471251 -9
+AddPlayer 794058009 354471251 2
+AddPlayer 1613025960 354471251 8
+GetAllPlayersByLevel 354471251
+GetGroupsHighestLevel -2
+GetHighestLevel 354471251
+ReplaceGroup 354471251 354471251
+RemovePlayer 794058009
+AddPlayer 761036685 354471251 5
+ReplaceGroup 354471251 -9
+AddPlayer 597921341 354471251 5
+ReplaceGroup 354471251 -4
+ReplaceGroup -1 354471251
+RemovePlayer 71001821
+ReplaceGroup 354471251 354471251
+GetGroupsHighestLevel 1
+GetHighestLevel 354471251
+GetGroupsHighestLevel 1
+RemovePlayer 597921341
+IncreaseLevel 761036685 -3
+AddGroup 1165399329
+GetGroupsHighestLevel 1
+AddGroup -4
+IncreaseLevel 761036685 1
+IncreaseLevel 1613025960 1
+GetAllPlayersByLevel 719619183
+IncreaseLevel 259689626 3
+ReplaceGroup 354471251 1165399329
+IncreaseLevel 1613025960 8
+AddPlayer 2090041695 1165399329 1
+RemovePlayer 2090041695
+ReplaceGroup 1165399329 1165399329
+AddGroup -1
+ReplaceGroup -7 1165399329
+IncreaseLevel 761036685 7
+ReplaceGroup 0 1165399329
+AddPlayer 313515030 1137854067 4
+IncreaseLevel 1613025960 5
+ReplaceGroup 1165399329 -7
+ReplaceGroup 1165399329 -6
+ReplaceGroup 1165399329 1165399329
+AddPlayer 625762521 1165399329 1
+ReplaceGroup 1165399329 -1
+AddPlayer 908024446 1165399329 6
+IncreaseLevel 761036685 8
+IncreaseLevel 761036685 -7
+IncreaseLevel 625762521 5
+AddPlayer 1111769398 1165399329 8
+IncreaseLevel 908024446 7
+AddGroup 1976505586
+GetAllPlayersByLevel 1165399329
+AddGroup -3
+IncreaseLevel 625762521 7
+AddGroup 693568306
+AddGroup 19158241
+RemovePlayer 625762521
+AddPlayer 1796916492 1165399329 7
+IncreaseLevel 1111769398 3
+AddPlayer -8 19158241 2
+IncreaseLevel 908024446 4
+IncreaseLevel 908024446 5
+AddPlayer 594624521 1165399329 5
+IncreaseLevel 1111769398 7
+IncreaseLevel 761036685 6
+ReplaceGroup 1165399329 693568306
+AddGroup 49483953
+ReplaceGroup 186906175 19158241
+ReplaceGroup 19158241 693568306
+ReplaceGroup 49483953 693568306
+AddPlayer 479111242 693568306 0
+IncreaseLevel 1613025960 4
+IncreaseLevel 761036685 8
+GetGroupsHighestLevel 1
+AddGroup 1543023587
+AddGroup 701461331
+AddPlayer -6 1543023587 2
+AddGroup 1976505586
+AddPlayer 2079396418 701461331 4
+GetAllPlayersByLevel -4
+GetAllPlayersByLevel -10
+GetHighestLevel -10
+IncreaseLevel 2079396418 -9
+GetGroupsHighestLevel 2
+AddGroup 132003694
+IncreaseLevel 594624521 5
+GetHighestLevel 701461331
+AddGroup 1464250813
+AddPlayer 503238859 1543023587 4
+AddGroup 880604324
+GetGroupsHighestLevel 3
+RemovePlayer 2079396418
+GetGroupsHighestLevel 2
+ReplaceGroup 701461331 1976505586
+AddPlayer -1 132003694 9
+ReplaceGroup 1976505586 693568306
+AddGroup 1938752290
+GetHighestLevel 0
+RemovePlayer 908024446
+AddGroup 1718526741
+ReplaceGroup 1938752290 1543023587
+ReplaceGroup 1464250813 789410173
+IncreaseLevel 1613025960 9
+ReplaceGroup 1718526741 132003694
+AddPlayer 1427242397 1543023587 0
+IncreaseLevel 1111769398 3
+GetGroupsHighestLevel 10
+GetAllPlayersByLevel 0
+GetGroupsHighestLevel 1
+GetAllPlayersByLevel -7
+AddPlayer 2141874559 693568306 0
+AddGroup 187735190
+RemovePlayer 503238859
+AddGroup 989101362
+GetAllPlayersByLevel 1464250813
+AddPlayer 1777525861 693568306 8
+IncreaseLevel 594624521 9
+RemovePlayer 761036685
+AddGroup 1464250813
+IncreaseLevel 1613025960 7
+RemovePlayer 594624521
+AddPlayer 2141874559 1543023587 6
+AddPlayer 796144319 880604324 7
+ReplaceGroup 1464250813 880604324
+AddGroup 989101362
+AddGroup 849329850
+AddGroup 70128035
+RemovePlayer 473997558
+GetHighestLevel -3
+IncreaseLevel 1635920593 8
+AddPlayer 1503067254 132003694 7
+RemovePlayer 1777525861
+ReplaceGroup 849329850 849329850
+RemovePlayer 1613025960
+IncreaseLevel 1503067254 -1
+GetAllPlayersByLevel 989101362
+AddGroup 1017263988
+IncreaseLevel 1427242397 2
+RemovePlayer 1503067254
+GetAllPlayersByLevel 989101362
+AddGroup 1725394247
+AddGroup 164162051
+IncreaseLevel 1796916492 6
+GetAllPlayersByLevel 2143736045
+RemovePlayer 1427242397
+GetGroupsHighestLevel 1
+RemovePlayer 2141874559
+AddGroup 187735190
+IncreaseLevel 1796916492 8
+ReplaceGroup 1017263988 1543023587
+AddGroup 1207006070
+IncreaseLevel 796144319 5
+AddPlayer 1031648001 1207006070 6
+RemovePlayer -10
+RemovePlayer 479111242
+AddGroup 728664887
+AddGroup 1125153243
+AddPlayer 878115759 164162051 8
+AddGroup 200418727
+ReplaceGroup 200418727 187735190
+ReplaceGroup 693568306 989101362
+AddPlayer 439529011 282608366 4
+IncreaseLevel 878115759 4
+IncreaseLevel 1111769398 -3
+IncreaseLevel 1796916492 8
+GetHighestLevel -3
+AddPlayer 631696470 1900961841 8
+IncreaseLevel 1796916492 5
+IncreaseLevel 878115759 9
+AddGroup 1054611198
+AddPlayer 969265171 728664887 0
+GetAllPlayersByLevel 1125153243
+GetHighestLevel 1054611198
+AddGroup 1332500949
+IncreaseLevel 969265171 2
+RemovePlayer -8
+ReplaceGroup 132003694 1725394247
+ReplaceGroup 728664887 849329850
+IncreaseLevel 1031648001 3
+AddPlayer 969265171 164162051 7
+IncreaseLevel 1031648001 4
+AddGroup 585785565
+RemovePlayer 1796916492
+AddGroup 1040551910
+GetGroupsHighestLevel 3
+GetHighestLevel -10
+GetGroupsHighestLevel 1
+AddGroup 469105611
+IncreaseLevel 796144319 3
+GetGroupsHighestLevel 5
+IncreaseLevel -5 5
+Quit

@@ -1,6 +1,12 @@
 #include "Player.h"
 
 Player::Player(int id, int level, Group *group) : id(id), level(level), group(group) {}
+Player::~Player()
+{
+    this->id = -1;
+    this->level = -1;
+    this->group = nullptr;
+}
 int Player::getId()
 {
     /*if(this != 0)
