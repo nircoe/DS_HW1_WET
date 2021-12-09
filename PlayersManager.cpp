@@ -63,7 +63,7 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int Level)
         p_tree = players_by_level.Find(Level); // doesn't gonna throw because its Exists
     else
     {
-        p_tree = new AVLTree<Player>;
+        p_tree = new AVLTree<Player>();
         if(players_by_level.GetTreeSize() == 0)
             players_by_level.Reset();
         if (!players_by_level.Insert(Level, p_tree)) // if Insert return false => allocation error
