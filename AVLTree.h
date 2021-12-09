@@ -53,6 +53,7 @@ class AVLNode
     int GetHeight() const { return (this != 0) ? height : -1; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
     void updateHeight() { this->height = 1 + std::max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
+    void ClearNode() { data = nullptr; parent = left = right = nullptr; }
 
     friend class AVLTree<T>;
     //friend class Group;
@@ -199,6 +200,86 @@ private:
         }
         else //equal keys not allowed
             return current;
+        current->updateHeight();
+        return Balance(current);
+    }
+
+    AVLNode<T> *RemoveNodeWithoutDelete(AVLNode<T> *current, int key_to_remove)
+    {
+        //Regular remove from BST tree:
+        if (current == nullptr)
+            return current;
+        if (current->GetKey() > key_to_remove) //remove from left sub-tree
+        {
+            current->SetLeft(RemoveNodeWithoutDelete(current->GetLeft(), key_to_remove));
+        }
+        else if (current->GetKey() < key_to_remove) //remove from right sub-tree
+        {
+            current->SetRight(RemoveNodeWithoutDelete(current->GetRight(), key_to_remove));
+        }
+        else //found node to delete
+        {
+            if (current->GetLeft() == nullptr || current->GetRight() == nullptr) // node with one child or leaf
+            {
+                AVLNode<T> *child = current->GetLeft() ? current->GetLeft() : current->GetRight();
+                if (child == nullptr) //node is leaf
+                {
+                    child = current;
+                    //disconnect current from his parent
+                    AVLNode<T> *parent = current->GetParent();
+                    if (parent) //current is not the root of the tree
+                    {
+                        parent->GetLeft() == current ? parent->SetLeft(nullptr) : parent->SetRight(nullptr);
+                        current = parent;
+                    }
+                    if(highest == child)
+                        highest = current;
+                    if(lowest == child)
+                        lowest = current;
+                    child->ClearNode();
+                    delete child;
+                    //current = nullptr;
+                }
+                else //node has one child
+                {
+                    //copy content of child to current node
+                    if (highest == child)
+                        highest = current;
+                    if (lowest == child)
+                        lowest = current;
+                    T *temp = current->data;
+                    current->key = child->key;
+                    current->data = child->data;
+                    child->data = temp;
+                    current->SetLeft(child->left);
+                    current->SetRight(child->right);
+                    if (child->left)
+                        child->left->SetParent(current);
+                    if (child->right)
+                        child->right->SetParent(current);
+                    child->ClearNode();
+                    delete child;
+                    //child = nullptr;
+                }
+            }
+            else //node has two children
+            {
+                T *temp = current->data;
+                AVLNode<T> *replacement = GetGreatestNode(current->left);
+                if (replacement == highest)
+                    highest = current;
+                if (replacement == lowest)
+                    lowest = current;
+                current->key = replacement->key;
+                current->data = replacement->data;
+                replacement->data = temp;
+                current->left = RemoveNodeWithoutDelete(current->left, replacement->key);
+            }
+        }
+        //tree had one node
+        if (current == nullptr)
+            return current;
+
         current->updateHeight();
         return Balance(current);
     }
@@ -373,16 +454,18 @@ private:
     void Reset_Aux()
     {
         root = highest = lowest = nullptr;
+        size = 0;
     }
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
-    AVLTree(int *keys, T **data, int size) // Sorted Array to AVL Tree Constructor
+    AVLTree(int *keys, T **data, int last_index) // Sorted Array to AVL Tree Constructor
     {
         AVLNode<T> *min = nullptr, *max = nullptr;
-        root = SortedArrayToAVL_aux(keys, data, 0, size, &min, &max, size);
+        root = SortedArrayToAVL_aux(keys, data, 0, last_index, &min, &max, last_index);
         highest = max;
         lowest = min;
+        size = last_index + 1;
     }
     ~AVLTree()
     {
@@ -491,6 +574,41 @@ public:
         size++;
         return true; // was return false, but it is success , no?
         //return false; // previous code
+    }
+    bool RemoveWithoutDelete(int key)
+    {
+        // if we remove the highest :
+        if (this->highest->GetKey() == key) // change the highest if he will removed
+        {
+            if (this->highest->GetParent() == nullptr)
+            {
+                AVLNode<T> *new_highest = highest->GetLeft();
+                if (new_highest)
+                    while (new_highest->GetRight() != nullptr)
+                        new_highest = new_highest->GetRight();
+                this->highest = new_highest;
+            }
+            else
+                this->highest = highest->GetParent();
+        }
+        // if we remove the lowest :
+        if (this->lowest->GetKey() == key) // change the lowest if he will removed
+        {
+            if (this->lowest->GetParent() == nullptr)
+            {
+                AVLNode<T> *new_lowest = lowest->GetRight();
+                while (new_lowest->GetLeft() != nullptr)
+                    new_lowest = new_lowest->GetLeft();
+                this->lowest = new_lowest;
+            }
+            else
+                this->lowest = lowest->GetParent();
+        }
+        root = RemoveNodeWithoutDelete(root, key); // it will return nullptr only if root == nullptr
+        if (!root)                    // RemoveNode failure, root was nullptr, tree is empty
+            return false;
+        size--;
+        return true;
     }
     bool Remove(int key)
     {

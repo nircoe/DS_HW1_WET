@@ -11,8 +11,8 @@ class Group
 {
     int id;
     int size;
-    AVLTree<Player> *players_by_id;
-    AVLTree<AVLTree<Player>> *players_by_level;
+    AVLTree<Player> *group_players_by_id;
+    AVLTree<AVLTree<Player>> *group_players_by_level;
 
 public:
     Group(int id);
@@ -25,7 +25,8 @@ public:
     StatusType RemovePlayerFromGroup(Player *p);
     AVLTree<Player>* GetPlayerById();
     AVLTree<AVLTree<Player>>* GetPlayerByLevel();
-    void SetTrees(AVLTree<Player> *players_by_id, AVLTree<AVLTree<Player>> *players_by_level);
+    void SetTrees(AVLTree<Player> *group_players_by_id, AVLTree<AVLTree<Player>> *group_players_by_level);
+    void ClearGroup();
     //friend void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size);
     //gethighest
 };
