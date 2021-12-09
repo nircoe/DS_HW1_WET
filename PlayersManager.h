@@ -25,6 +25,7 @@ public:
     StatusType GetHighestLevel(int GroupID, int *PlayerID);
     int* GetGroupsHighestLevel(int numOfGroups, StatusType *st);
     int* GetAllPlayersByLevel(int GroupID, int *numOfPlayers, StatusType *st);
+    void Quit(PlayersManager *pm);
 };
 
 #endif

@@ -75,11 +75,6 @@ StatusType GetAllPlayersByLevel(void *DS, int GroupID, int **Players, int *numOf
 
 void Quit(void **DS)
 {
-    PlayersManager *s = (PlayersManager *)*DS;
-    delete s;
-    //try this mabye?
-    free(*DS);
-    DS = NULL;
-
-    //*DS = NULL;
+    PlayersManager *pm = (PlayersManager *)(*DS);
+    pm->Quit(pm);
 }

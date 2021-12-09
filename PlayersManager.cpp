@@ -390,3 +390,8 @@ int* PlayersManager::GetAllPlayersByLevel(int GroupID, int *numOfPlayers, Status
     Group *g = groups.Find(GroupID); // not gonna throw because its Exists
     return GetAllPlayersByLevel_AUX(g->GetPlayerByLevel(), numOfPlayers);
 }
+
+void PlayersManager::Quit(PlayersManager *pm)
+{
+    delete pm;
+}
