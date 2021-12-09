@@ -1,0 +1,20 @@
+Init done.
+AddGroup: SUCCESS
+AddPlayer: SUCCESS
+AddPlayer: FAILURE
+AddGroup: SUCCESS
+AddGroup: FAILURE
+AddPlayer: SUCCESS
+GroupIndex	||	Player
+1	||	1
+2	||	2
+and there are no more players!
+ReplaceGroup: SUCCESS
+Highest level player is: 2
+IncreaseLevel: SUCCESS
+Highest level player is: 1
+RemovePlayer: SUCCESS
+Rank	||	Player
+1	||	1
+and there are no more players!
+Quit done.

@@ -3,12 +3,19 @@
 
 void *Init()
 {
-    PlayersManager *DS = new PlayersManager();
-    return (void *)DS;
+    try
+    {
+        PlayersManager *DS = new PlayersManager();
+        return (void *)(DS);
+    }
+    catch (const std::exception &e)
+    {
+        return NULL;
+    }
 }
 StatusType AddGroup(void *DS, int GroupID)
 {
-    if(DS == nullptr)
+    if (DS == nullptr)
         return INVALID_INPUT;
     return ((PlayersManager *)DS)->AddGroup(GroupID);
 }
@@ -50,20 +57,29 @@ StatusType GetHighestLevel(void *DS, int GroupID, int *PlayerID)
 
 StatusType GetGroupsHighestLevel(void *DS, int numOfGroups, int **Players)
 {
-    if (DS == nullptr)
+    if (DS == nullptr || Players == nullptr)
         return INVALID_INPUT;
-    return ((PlayersManager *)DS)->GetGroupsHighestLevel(numOfGroups, Players);
+    StatusType st;
+    *Players = ((PlayersManager *)DS)->GetGroupsHighestLevel(numOfGroups, &st);
+    return st;
 }
 
 StatusType GetAllPlayersByLevel(void *DS, int GroupID, int **Players, int *numOfPlayers)
 {
-    if (DS == nullptr)
+    if (DS == nullptr || Players == nullptr)
         return INVALID_INPUT;
-    return ((PlayersManager *)DS)->GetAllPlayersByLevel(GroupID, Players, numOfPlayers);
+    StatusType st;
+    *Players = ((PlayersManager *)DS)->GetAllPlayersByLevel(GroupID, numOfPlayers, &st);
+    return st;
 }
 
 void Quit(void **DS)
 {
-    ((PlayersManager *)DS)->Quit();
-    //*DS=nullptr;
+    PlayersManager *s = (PlayersManager *)*DS;
+    delete s;
+    //try this mabye?
+    free(*DS);
+    DS = NULL;
+
+    //*DS = NULL;
 }

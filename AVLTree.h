@@ -29,16 +29,28 @@ class AVLNode
 
     AVLNode();
     AVLNode(int key, T *data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
-    ~AVLNode() = default;
-    int GetKey() const { return (this != 0) ? key : -1; }
-    T *GetData() { return data; }
+    ~AVLNode()
+    {
+        try
+        {
+            delete this->data;
+            //delete this->right;
+            //delete this->left;
+            //delete this->parent;
+            this->key = -1;
+            this->height = -1;
+        }
+        catch(const std::exception& e) { }
+    }
+    int GetKey() const { return (this == 0) ? -1 : key; }
+    T *GetData() { return (this == 0) ? nullptr : data; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
-    AVLNode *GetLeft() const { return left; }
+    AVLNode *GetLeft() const { return (this == 0) ? nullptr : left; }
     void SetRight(AVLNode *new_right) { right = new_right; }
-    AVLNode *GetRight() const { return right; }
+    AVLNode *GetRight() const { return (this == 0) ? nullptr : right; }
     void SetParent(AVLNode *new_parent) { parent = new_parent; }
-    AVLNode *GetParent() const { return parent; }
-    int GetHeight() const { return (this != 0) ? height : -1; }
+    AVLNode *GetParent() const { return (this == 0) ? nullptr : parent; }
+    int GetHeight() const { return (this == 0) ? -1 : height; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
     void updateHeight() { this->height = 1 + std::max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
 
@@ -133,11 +145,12 @@ private:
     }
     AVLNode<T> *Find_aux(AVLNode<T> *current, int key)
     {
-        if (current)
+        if (current != nullptr) 
         {
-            if (current->GetKey() == key)
+            const int k = current->GetKey();
+            if (k == key)
                 return current; // Found the node :)
-            else if (key < current->GetKey())
+            else if (key < k)
                 return Find_aux(current->GetLeft(), key);
             else
                 return Find_aux(current->GetRight(), key);
@@ -214,25 +227,51 @@ private:
                     //disconnect current from his parent
                     AVLNode<T> *parent = current->GetParent();
                     if (parent) //current is not the root of the tree
+                    {
                         parent->GetLeft() == current ? parent->SetLeft(nullptr) : parent->SetRight(nullptr);
-                    current = nullptr;
+                        current = parent;
+                    }
+                    child->SetParent(nullptr);
+                    child->SetLeft(nullptr);
+                    child->SetRight(nullptr);
+                    delete child;
+                    //current = nullptr;
                 }
                 else //node has one child
                 {
                     //copy content of child to current node
+                    if(highest == child)
+                        highest = current;
+                    if(lowest == child)
+                        lowest = current;
+                    T *temp = current->data;
                     current->key = child->key;
                     current->data = child->data;
-                    current->SetLeft(nullptr);
-                    current->SetRight(nullptr);
+                    child->data = temp;
+                    current->SetLeft(child->left);
+                    current->SetRight(child->right);
+                    if(child->left)
+                        child->left->SetParent(current);
+                    if(child->right)
+                        child->right->SetParent(current);
+                    child->SetLeft(nullptr);
+                    child->SetParent(nullptr);
+                    child->SetRight(nullptr);
+                    delete child;
+                    //child = nullptr;
                 }
-                delete child;
-                child = nullptr;
             }
             else //node has two children
             {
+                T *temp = current->data;
                 AVLNode<T> *replacement = GetGreatestNode(current->left);
+                if(replacement == highest)
+                    highest = current;
+                if(replacement == lowest)
+                    lowest = current;
                 current->key = replacement->key;
                 current->data = replacement->data;
+                replacement->data = temp;
                 current->left = RemoveNode(current->left, replacement->key);
 
                 /* previous code :
@@ -288,7 +327,7 @@ private:
         array[(*index)++] = node->GetKey();
         GetKeysArray_AUX(node->GetRight(), array, index);
     }
-    AVLNode<T> *SortedArrayToAVL_aux(int keys[], T *data[], int start, int end, AVLNode<T> *min, AVLNode<T> *max, const int last_index)
+    AVLNode<T> *SortedArrayToAVL_aux(int keys[], T *data[], int start, int end, AVLNode<T> **min, AVLNode<T> **max, const int last_index)
     {
         //Base Case
         if (start > end)
@@ -298,9 +337,9 @@ private:
         int mid = (start + end) / 2;
         AVLNode<T> *root = new AVLNode<T>(keys[mid], data[mid]);
         if (mid == 0)
-            min = root;
+            *min = root;
         else if (mid == last_index)
-            max = root;
+            *max = root;
         //Recursively construct the left subtree and make it left child of root
         AVLNode<T> *left_child = SortedArrayToAVL_aux(keys, data, start, mid - 1, min, max, last_index);
         root->SetLeft(left_child);
@@ -322,17 +361,57 @@ private:
     {
         lowest = new_lowest;
     }
+    void PostOrderDelete(AVLNode<T> *node)
+    {
+        if (node != nullptr)
+        {
+            PostOrderDelete(node->GetLeft());
+            PostOrderDelete(node->GetRight());
+            delete node;
+        }
+    }
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
     AVLTree(int *keys, T **data, int size) // Sorted Array to AVL Tree Constructor
     {
         AVLNode<T> *min = nullptr, *max = nullptr;
-        root = SortedArrayToAVL_aux(keys, data, 0, size, min, max, size);
+        root = SortedArrayToAVL_aux(keys, data, 0, size, &min, &max, size);
         highest = max;
         lowest = min;
-    } 
-    ~AVLTree() = default;
+    }
+    ~AVLTree()
+    {
+        try
+        {
+            PostOrderDelete(root);
+            /*if (root == highest && highest == lowest)
+                delete this->root;
+            else if(root == highest)
+            {
+                delete this->root;
+                delete this->lowest;
+            }
+            else if(root == lowest)
+            {
+                delete this->root;
+                delete this->lowest;
+            }
+            else if(highest == lowest)
+            {
+                delete this->root;
+                delete this->highest;
+            }
+            else
+            {
+                delete this->root;
+                delete this->highest;
+                delete this->lowest;
+            }*/
+            size = -1;
+        }
+        catch(const std::exception& e) { }
+    }
     AVLNode<T> *GetRoot() const
     {
         return root;
@@ -380,8 +459,8 @@ public:
     bool Insert(int key, T *data = nullptr)
     {
         AVLNode<T> *new_node = new AVLNode<T>(key, data);
-        if (!new_node)
-            return false; // ALLOCATION_ERROR
+        //if (!new_node)
+        //    return false; // ALLOCATION_ERROR
         if (!root)        //empty tree, special case
         {
             root = new_node;
@@ -408,31 +487,31 @@ public:
     bool Remove(int key)
     {
         // if we remove the highest :
-        if (highest->GetKey() == key) // change the highest if he will removed
+        if (this->highest->GetKey() == key) // change the highest if he will removed
         {
-            if (highest->GetParent() == nullptr)
+            if (this->highest->GetParent() == nullptr)
             {
                 AVLNode<T> *new_highest = highest->GetLeft();
                 if (new_highest)
                     while (new_highest->GetRight() != nullptr)
                         new_highest = new_highest->GetRight();
-                highest = new_highest;
+                this->highest = new_highest;
             }
             else
-                highest = highest->GetParent();
+                this->highest = highest->GetParent();
         }
         // if we remove the lowest :
-        if (lowest->GetKey() == key) // change the lowest if he will removed
+        if (this->lowest->GetKey() == key) // change the lowest if he will removed
         {
-            if (lowest->GetParent() == nullptr)
+            if (this->lowest->GetParent() == nullptr)
             {
                 AVLNode<T> *new_lowest = lowest->GetRight();
                 while (new_lowest->GetLeft() != nullptr)
                     new_lowest = new_lowest->GetLeft();
-                lowest = new_lowest;
+                this->lowest = new_lowest;
             }
             else
-                lowest = lowest->GetParent();
+                this->lowest = lowest->GetParent();
         }
         root = RemoveNode(root, key); // it will return nullptr only if root == nullptr
         if (!root)                    // RemoveNode failure, root was nullptr, tree is empty
@@ -492,7 +571,7 @@ void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size)
     // if (node->GetData()->GetPlayerById()->GetTreeSize() > 0)
     // {
         int id = node->GetData()->GetPlayerByLevel()->GetHighest()->GetLowest()->getId();
-        *array[*index] = id;
+        (*array)[*index] = id;
         ++(*index);
     // }
     // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group
@@ -505,7 +584,7 @@ void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // left 
     if (!node)
         return;
     LTRInOrderForPlayers(node->GetLeft(), array, index);
-    *array[(*index)++] = node->GetData()->getId();
+    (*array)[(*index)++] = node->GetData()->getId();
     LTRInOrderForPlayers(node->GetRight(), array, index);
 }
 

@@ -12,7 +12,8 @@ StatusType PlayersManager::AddGroup(int GroupID)
         return INVALID_INPUT;
     if (groups.Exists(GroupID) || empty_groups.Exists(GroupID)) // group already exists
         return FAILURE;
-    if (!groups.Insert(GroupID, new Group(GroupID))) // check if Insert return false => only on allocation error
+    Group *g = new Group(GroupID);
+    if (!empty_groups.Insert(GroupID, g)) // check if Insert return false => only on allocation error
         return ALLOCATION_ERROR;
     return SUCCESS;
 }
@@ -35,7 +36,7 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int Level)
     }
     else
         return FAILURE;
-    Group *g = groups.Find(GroupID); // doesn't gonna throw because its Exists
+    //Group *g = groups.Find(GroupID); // doesn't gonna throw because its Exists
     Player *p = new Player(PlayerID, Level, g);
     if (!players_by_id.Insert(PlayerID, p)) // check if Insert return false => only on allocation error
         return ALLOCATION_ERROR;
@@ -83,8 +84,11 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
     AVLTree<Player> *p_tree = players_by_level.Find(p->getLevel());
     if (!p_tree->Remove(p->getId())) // Remove will return false only if the tree is empty, not supposed to happened
         return FAILURE;
+    if(p_tree->GetTreeSize() == 0)
+        players_by_level.Remove(p->getLevel());
     if (!players_by_id.Remove(p->getId())) // Remove will return false only if the tree is empty, not supposed to happened
         return FAILURE;
+    delete p;
     return SUCCESS;
 }
 StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
@@ -123,6 +127,7 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
         {
             merged[k] = group[i];
             merged_keys[k] = group[i]->getId();
+            group[i]->setGroup(replacement_group);
             i++;
         }
         else
@@ -137,6 +142,7 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     {
         merged[k] = group[i];
         merged_keys[k] = group[i]->getId();
+        group[i]->setGroup(replacement_group);
         k++;
         i++;
     }
@@ -179,11 +185,13 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
         {
             merged_by_level[k] = group_by_level[i];
             merged_keys[k] = l1;
+            i++;
         }
         else if (l1 > l2)
         {
             merged_by_level[k] = replacement_by_level[j];
             merged_keys[k] = l2;
+            j++;
         }
         else //trees of the same level, we need to merge them first
         {
@@ -255,11 +263,18 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     merged_size = n_group + n_replacement;
     AVLTree<AVLTree<Player>> *merged_tree_by_level = new AVLTree<AVLTree<Player>>(merged_keys, merged_by_level, merged_size - 1);
     //AVLTree<AVLTree<Player>> *merged_tree_by_level = merged_tree_by_level->SortedArrayToAVL(merged_keys, merged_by_level, merged_size - 1);
-    replacement_group->SetTrees(*merged_tree_by_id, *merged_tree_by_level);
+    replacement_group->SetTrees(merged_tree_by_id, merged_tree_by_level);
+    delete group;
+    delete replacement;
+    delete merged;
+    delete group_by_level;
+    delete replacement_by_level;
+    delete merged_by_level;
+    delete merged_keys;
     if (!groups.Remove(GroupID))
         return FAILURE;
-    if (!empty_groups.Insert(GroupID, current_group))
-        return FAILURE;
+    //if (!empty_groups.Insert(GroupID, current_group))
+    //    return FAILURE;
     return SUCCESS;
 }
 StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
@@ -274,6 +289,8 @@ StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
     //removing the player and increasing his level
     g->RemovePlayerFromGroup(p);
     p_tree->Remove(p->getId());
+    if(p_tree->GetTreeSize() == 0)
+        players_by_level.Remove(p->getLevel());
     p->incrementLevel(LevelIncrease);
     players_by_id.Remove(p->getId());
     //re-inserting the player to the level trees
@@ -286,7 +303,7 @@ StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
         p_tree = new AVLTree<Player>;
         p_tree->Insert(p->getId(), p);
         players_by_level.Insert(p->getLevel(), p_tree);
-        delete p_tree;
+        /* delete p_tree; */
     }
     g->AddPlayerToGroup(p);
     players_by_id.Insert(p->getId(), p);
@@ -310,7 +327,7 @@ StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     }
     if (!groups.Exists(GroupID)) // the group doesn't exist
         return FAILURE;
-    Group *g = groups.Find(GroupID);                                                    // not gonna throw because it is Exists
+    Group *g = groups.Find(GroupID);                                                   // not gonna throw because it is Exists
     AVLTree<AVLTree<Player>> *group_players_level_tree = g->GetPlayerByLevel();         // get the AVLTree of players by level of this group
     AVLTree<Player> *group_highest_level_tree = group_players_level_tree->GetHighest(); // get the highest node in the tree
     if (!group_highest_level_tree)                                                      // there is no players in this group
@@ -322,58 +339,54 @@ StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     return SUCCESS;
 }
 
-StatusType PlayersManager::GetGroupsHighestLevel(int numOfGroups, int **Players)
+int* PlayersManager::GetGroupsHighestLevel(int numOfGroups, StatusType *st)
 {
-    if (Players == nullptr || numOfGroups < 1)
-        return INVALID_INPUT;
-    *Players = new int[numOfGroups];
+    if (numOfGroups < 1)
+    {
+        *st = INVALID_INPUT;
+        return nullptr;
+    }
+    int *Players = (int *)malloc(numOfGroups * sizeof(int));
     int index = 0;
-    LTRInOrderForGroups<Group>(groups.GetRoot(), Players, &index, numOfGroups);
+    LTRInOrderForGroups<Group>(groups.GetRoot(), &Players, &index, numOfGroups);
     if (index < numOfGroups) // maybe delete Players
-        return FAILURE;
-    return SUCCESS;
+        {
+            *st = FAILURE;
+            return nullptr;
+        }
+    *st = SUCCESS;
+    return Players;
 }
 
-StatusType PlayersManager::GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> *tree, int **Players, int *numOfPlayers)
+int* PlayersManager::GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> *tree, int *numOfPlayers)
 {
     *numOfPlayers = tree->GetTreeSize();
     if (*numOfPlayers == 0)
-    {
-        Players = nullptr;
-        return SUCCESS;
-    }
-    Players = new int *[*numOfPlayers];
+        return nullptr;
+    int *Players = (int *)malloc((*numOfPlayers) * sizeof(int));
     int index = 0;
-    RTLInOrderForPlayers<AVLTree<Player>>(tree->GetRoot(), Players, &index);
-    return SUCCESS;
+    RTLInOrderForPlayers<AVLTree<Player>>(tree->GetRoot(), &Players, &index);
+    return Players;
 }
 
-StatusType PlayersManager::GetAllPlayersByLevel(int GroupID, int **Players, int *numOfPlayers)
+int* PlayersManager::GetAllPlayersByLevel(int GroupID, int *numOfPlayers, StatusType *st)
 {
-    if (Players == nullptr || numOfPlayers == nullptr)
-        return INVALID_INPUT;
+    *st = SUCCESS;
+    if (numOfPlayers == nullptr)
+    {
+        *st = INVALID_INPUT;
+        return nullptr;
+    }
     if (GroupID < 0)
     {
-        return GetAllPlayersByLevel_AUX(&players_by_level, Players, numOfPlayers);
+        *numOfPlayers = players_by_id.GetTreeSize();
+        return GetAllPlayersByLevel_AUX(&players_by_level, numOfPlayers);
     }
     if (!groups.Exists(GroupID)) // the group doesn't exist
     {
-        if (!empty_groups.Exists(GroupID))
-            return FAILURE;
-        else
-        {
-            *Players = NULL;
-            *numOfPlayers = 0;
-            return SUCCESS;
-        }
+        *st = FAILURE;
+        return nullptr;
     }
     Group *g = groups.Find(GroupID); // not gonna throw because its Exists
-    return GetAllPlayersByLevel_AUX(g->GetPlayerByLevel(), Players, numOfPlayers);
-}
-void PlayersManager::Quit()
-{
-    //Like this?
-    players_by_id.~AVLTree();
-    players_by_level.~AVLTree();
-    groups.~AVLTree();
+    return GetAllPlayersByLevel_AUX(g->GetPlayerByLevel(), numOfPlayers);
 }

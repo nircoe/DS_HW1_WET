@@ -1,0 +1,574 @@
+//by Ziv Damir and Tom Guy
+Init 
+//addGroup
+AddGroup 1 //success
+AddGroup 1 //failure
+AddGroup 3 //success
+AddGroup 0 //invalid_id.
+//addPlayer ( playerId , GroupID , Level)
+//need to add here Invalid Input 
+AddPlayer -1 -1 -1//INVALID_INPUT
+AddPlayer -1 2 1 //Invalid_Input
+AddPlayer 1 -2 1 //Invalid_input
+AddPlayer 1 2 -3 //Invalid_Input
+AddPlayer 1 1 1 //success
+AddPlayer 1 1 1 //failure (same id, same group, same level)
+AddPlayer 1 1 3 //failure (same id ,different level)
+AddPlayer 1 3 1 //failure (same id, different Group(that exists),same level)
+AddPlayer 1 3 3 // failure (same id, different Group(that exists),other level)
+AddPlayer 1 2 1 //failure( same id, different Group(doesn’t exist),same  level)
+AddPlayer 1 2 3 // failure (same id, different Group(doesn’t exist), other level
+AddPlayer 2 3 1 //success (same id ,different Group (exists),same level)
+AddPlayer 3 1 3 //success (same id , different Group(exists),different level)
+AddPlayer 1 1 1 //failure (just trying again after adding another one)
+//STRESS TEST!!,now only Group 1 and 3 exist.
+AddGroup -6 //Invalid_input
+AddGroup -5 //Invalid_input
+AddGroup -4 //Invalid_input
+AddGroup -3 //Invalid_input
+AddGroup -2 //Invalid_input
+AddGroup -1 //Invalid_input
+AddGroup 0 //Invalid_input
+AddGroup 1 //Failure
+AddGroup 2  //success 
+AddGroup 3  //failure
+AddGroup 4 //success 
+AddGroup 5 //success 
+AddGroup 6 //success 
+AddGroup 7 //success 
+AddGroup 8 //success 
+AddGroup 9 //success 
+AddGroup 10 //success 
+AddGroup 11 //success 
+AddGroup 12 //success 
+AddGroup 13 //success 
+AddGroup 14//success
+//now only player 1 ,2 ,3 exist., lets add more.(and try to inject some illegals)
+AddPlayer 4 4 4 //success
+AddPlayer 123 4 -1 //Invalid_input
+AddPlayer 5 5 5 //success
+AddPlayer 123 5 -1 //Invalid_input
+AddPlayer 6 6 6 //success
+AddPlayer 123 6 -1 //Invalid_input
+AddPlayer 7 7 7 //success
+AddPlayer 123 7 -1 //Invalid_input
+AddPlayer 8 8 8 //success
+AddPlayer 123 8 -1 //Invalid_input
+AddPlayer 9 9 9 //success
+AddPlayer 123 9 -1 //Invalid_input
+AddPlayer 10 10 10 //success
+AddPlayer 123 10 -1 //Invalid_input
+AddPlayer 11 11 11 //success
+AddPlayer 123 11 -1 //Invalid_input
+AddPlayer 12 12 12 //success
+AddPlayer 123 12 -1 //Invalid_input
+AddPlayer 13 13 13 //success
+AddPlayer 123 13 -1 //Invalid_input
+AddPlayer 14 14 14  //success
+AddPlayer 123 14 -1 //Invalid_input
+Quit //end of AddPlayerTesting&AddGroup.
+//RemovePlayer(playerId)
+Init
+AddGroup 1 //full group
+AddGroup 2 //empty group
+AddPlayer 1 1 1 // SUCCESS(just adding players)
+RemovePlayer 1 //success
+RemovePlayer 1 //failure(trying to remove twice)
+AddPlayer 1 1 1 // success
+AddPlayer 3 1 2 //success
+RemovePlayer 1 // sucess(trying to remove from non empty group)
+RemovePlayer 3//success
+RemovePlayer 3 // failure(trying to remove again for sports)
+RemovePlayer 2 //failure (trying to remove non existent player)
+RemovePlayer 2 //failure (trying again for the sports)
+AddPlayer 2 2 2 //success (adding him)
+RemovePlayer 2 // success(removing  him)
+RemovePlayer 2// failure(doesn;t exists)
+AddPlayer 1 2 1 //sucesss (adding him again to anoter group)
+RemovePlayer 1 //sucess
+RemovePlayer 1 //failure (for sports)
+//STRESS TEST
+AddGroup 3  //success 
+AddGroup 4 //success 
+AddGroup 5 //success 
+AddGroup 6 //success 
+AddGroup 7 //success 
+AddGroup 8 //success 
+AddGroup 9 //success 
+AddGroup 10 //success 
+AddGroup 11 //success 
+AddGroup 12 //success 
+AddGroup 13 //success 
+AddGroup 14//success
+//lets test it on single Group
+AddPlayer 1 1 1 //success
+AddPlayer 2 1 1 //success
+AddPlayer 3 1 2 //success
+AddPlayer 4 1 1 //success
+AddPlayer 5 1 3 //success
+AddPlayer 6 1 1 //success
+AddPlayer 7 1 4 //success 
+AddPlayer 8 1 5 //success
+AddPlayer 9 1 1 //success
+RemovePlayer 1 //success
+RemovePlayer 1 //failure 
+RemovePlayer 2 //success
+RemovePlayer 2 //failure 
+RemovePlayer 3 //success
+RemovePlayer 3 //failure 
+RemovePlayer 4 //success
+RemovePlayer 4 //failure 
+RemovePlayer 5 //success
+RemovePlayer 5 //failure 
+RemovePlayer 6 //success
+RemovePlayer 6 //failure 
+RemovePlayer 7 //success
+RemovePlayer 7 //failure 
+RemovePlayer 8 //success
+RemovePlayer 8 //failure 
+RemovePlayer 9 //success
+RemovePlayer 9 //failure 
+AddPlayer 1 1 1 //success
+AddPlayer 2 2 1 //success
+AddPlayer 3 3 2 //success
+AddPlayer 4 4 1 //success
+AddPlayer 5 5 3 //success
+AddPlayer 6 6 1 //success
+AddPlayer 7 7 4 //success 
+AddPlayer 8 8 5 //success
+AddPlayer 9 9 1 //success
+AddPlayer 10 10 1 //success
+AddPlayer 11 11 1 //success
+AddPlayer 12 12 12 //sucess
+AddPlayer 13 13 13 //success
+AddPlayer 14 14 14 //success
+RemovePlayer 1 //success
+RemovePlayer 1 //failure
+RemovePlayer 2 //success
+RemovePlayer 2 //failure 
+RemovePlayer 3 //success
+RemovePlayer 3 //failure 
+RemovePlayer 4 //success
+RemovePlayer 4 //failure 
+RemovePlayer 5 //success
+RemovePlayer 5 //failure 
+RemovePlayer 6 //success
+RemovePlayer 6 //failure 
+RemovePlayer 7 //success
+RemovePlayer 7 //failure 
+RemovePlayer 8 //success
+RemovePlayer 8 //failure 
+RemovePlayer 9 //success
+RemovePlayer 9 //failure 
+RemovePlayer 10 //success
+RemovePlayer 10 //failure 
+RemovePlayer 11 //success
+RemovePlayer 11 //failure 
+RemovePlayer 12 //success
+RemovePlayer 12 //failure 
+RemovePlayer 13 //success
+RemovePlayer 13 //failure 
+RemovePlayer 14 //success
+RemovePlayer 14 //failure 
+Quit //end of RemovePlayer
+//replaceGroups
+Init
+//ReplaceGroup(int GroupId,int ReplacementID) REPLACEMENT GETS GROUPID'S players.
+AddGroup 1// success
+AddGroup 2 //success
+ReplaceGroup 1 -2 //Invalid Input
+ReplaceGroup -2 1 //Invalid Input
+ReplaceGroup 1  1 //Invalid Input.
+ReplaceGroup 1 2 //success
+ReplaceGroup 2 1 //failure (trying to reach non-exisstent group)
+AddPlayer 1 1 1 //failure( Group 1 doesn't exist)
+RemovePlayer 1 //failure(Player 1 doesn't exist
+AddPlayer 1 2 1 //success (Group 2 still exists)
+RemovePlayer 1 //successs (Group 2 still exists)
+AddGroup 1 // success
+AddPlayer 1 1 1//success
+ReplaceGroup 2 1 //sucess( now group 2 doesn't exist)
+AddPlayer 3 2 1 // failure (Group 2 doesn't exist)
+RemovePlayer 3 //failure (player 3 doesn't exist)
+//next testing , two whole groups.
+AddGroup 2 // success
+AddPlayer 4 2 1 //sucess 
+ReplaceGroup 2 1 //now Group 2 ceases to exist.
+RemovePlayer 4 //success
+RemovePlayer 1 //success
+// now only group 1 exists ,with no players 
+ReplaceGroup 4 5 //failure (both doesnt exist)
+ReplaceGroup 5 4 //failure (both doesnt exist)
+ReplaceGroup 5 1 //failure ( 5 doesnt exist)
+ReplaceGroup 1 5 //failure (5 doesnt exist)
+//stress testing :^)
+AddGroup 2 //success
+AddGroup 3 //success
+AddGroup 4 //success
+AddGroup 5 //success
+AddGroup 6 //success
+AddGroup 7 //success
+AddGroup 8 //success
+AddGroup 9 //success
+AddGroup 10 //success
+AddGroup 11 //success
+AddPlayer 1 1 1 //success
+AddPlayer 2 2 2 //success
+AddPlayer 3 3 3 //success
+AddPlayer 4 4 4 //success
+AddPlayer 5 5 5 //success
+AddPlayer 6 6 6 //success
+AddPlayer 7 7 7 //success
+AddPlayer 8 8 8 //success
+AddPlayer 9 9 9 //success
+AddPlayer 10 10 10// success
+AddPlayer 11 11 11 //success
+ReplaceGroup 11 10 //success
+AddPlayer 12 11 12 //failure(group 11 doesn;t exist)
+ReplaceGroup 10 9 //success
+ReplaceGroup 9 8 //success
+ReplaceGroup 8 7 //success
+ReplaceGroup 7 6 //success
+ReplaceGroup 6 5//success
+ReplaceGroup 5 4 //success
+ReplaceGroup 4 3 //success
+ReplaceGroup 3 2 //success
+ReplaceGroup 2 1 //success
+RemovePlayer 11 //success
+RemovePlayer 10//success
+RemovePlayer 9 //success
+RemovePlayer 8//success
+RemovePlayer 7//success
+RemovePlayer 6//success
+RemovePlayer 5//success
+RemovePlayer 4//success
+RemovePlayer 3//success
+RemovePlayer 2//success
+RemovePlayer 1//success
+//lets test if you actually deleted the groups.
+AddPlayer 2 2 2 //failure
+AddPlayer 3 3 3 //failure
+AddPlayer 4 4 4 //failure
+AddPlayer 5 5 5 //failure
+AddPlayer 6 6 6 //failure
+AddPlayer 7 7 7 //failure
+AddPlayer 8 8 8 //failure
+AddPlayer 9 9 9 //failure
+AddPlayer 10 10 10 //failure
+AddPlayer 11 11 11 //failure
+//now only group 1 should exist
+AddPlayer 1 1 1 //success
+AddPlayer 2 1 2 //success
+AddPlayer 3 1 3 //success
+AddPlayer 4 1 4 //success
+AddPlayer 5 1 5 //success
+AddPlayer 6 1 6 //success
+AddPlayer 7 1 7 //success
+AddPlayer 8 1 8 //success
+AddPlayer 9 1 9 //success
+AddPlayer 10 1 10 //success
+AddPlayer 11 1 11 //success
+AddGroup 2 //success 
+ReplaceGroup 1 2//now everything should be in group 2
+//lets check that
+AddPlayer 12 1 12 //Failure (group 1 doesn't exist)
+RemovePlayer 11 //success
+RemovePlayer 10//success
+RemovePlayer 9 //success
+RemovePlayer 8//success
+RemovePlayer 7//success
+RemovePlayer 6//success
+RemovePlayer 5//success
+RemovePlayer 4//success
+RemovePlayer 3//success
+RemovePlayer 2//success
+RemovePlayer 1//success
+//end of testing
+Quit
+//IncreaseLevel(int PlayerID,int levelIncrease)
+Init
+AddGroup 1
+IncreaseLevel 0 1 //invalid_input
+//player doesn't exist
+IncreaseLevel 1 0 //invalid_input
+IncreaseLevel 1 1//failure(player doesn't exist.)
+AddPlayer 1 1 1 //success
+//from now on player 1 exists
+IncreaseLevel 1 1 // success
+IncreaseLevel 1 -1 // Invalid_input(trying to level 
+RemovePlayer 1//success
+//from now on RemovePlayer Doesn't exist anymore
+IncreaseLevel 1 1 // failure
+IncreaseLevel 1 -1 // Invalid_input
+//playing with non-root Groups
+AddGroup 2 //success
+AddPlayer 2 2 2//success
+//from now on player 2 exists
+IncreaseLevel 2 2 // success
+IncreaseLevel 2 -2 // Invalid_input(trying to level 
+RemovePlayer 2//success
+//from now on Player 2 Doesn't exist anymore
+IncreaseLevel 2 2 // failure
+IncreaseLevel 2 -2  // Invalid_input
+//end of testing with lone groups
+//replaceGroups Testing with it.
+AddPlayer 2 2 2 //success
+AddPlayer 1 1 1 //succces
+ReplaceGroups 2 1 //deleting Group 2 
+IncreaseLevel 2 2 //success
+IncreaseLevel 1 1 //
+AddPlayer 3 1 4 //success
+ReplaceGroups 1 1//Invalid_input 
+IncreaseLevel 2 2 //success
+//end of Increase_level.
+Quit
+
+//GetHighestLevel
+Init
+AddGroup 1
+AddPlayer 3 1 1
+GetHighestLevel -1 //return 3
+GetHighestLevel 1 // return 3
+GetHighestLevel 0// INVALID_INPUT
+GetHighestLevel 3 //FAILURE
+RemovePlayer 3 // test the function after removing the only player
+GetHighestLevel 1 //return -1 - because no player is in the group
+GetHighestLevel -1 // return -1 because there are no players in the system
+AddPlayer 1 1 1 //fine
+GetHighestLevel 1 // return 1
+AddPlayer 3 1 3 //OK
+GetHighestLevel 1 //return 3
+RemovePlayer 1 //test if the highest player chage even thogh its not suppose to, suppose to return 3
+GetHighestLevel 1 //here
+AddPlayer 1 1 1 // again
+GetHighestLevel -3 //return 3
+IncreaseLevel 1 5 
+GetHighestLevel -3 //now suppose to return 1, after level was increase
+GetHighestLevel 1// both in his group and in all players group
+AddGroup 5
+AddGroup 4
+AddPlayer 2 5 9
+GetHighestLevel 3 //FAILURE
+GetHighestLevel -4 //return 2
+RemovePlayer 1
+GetHighestLevel -4 //still returns 2
+RemovePlayer 2
+GetHighestLevel 2 //FAILURE
+GetHighestLevel -1 // 3 is the only player now
+AddPlayer 5 4 1 //sucess
+ReplaceGroups 4 1 //SUCCESS, testing both of the groups for highest player
+GetHighestLevel 1 //return 5
+GetHighestLevel 4 // FAILURE
+GetHighestLevel -3// return 5
+RemovePlayer 5 //success(removing the highestPlayer)
+GetHighestLevel -3//return 3
+AddPlayer 9 5 111
+GetHighestLevel 5 // return 9
+ReplaceGroups 1 5 //now the highest player stay in his group
+GetHighestLevel 1 //FAILURE
+GetHighestLevel 5 //return 9
+GetHighestLevel -5// return 9
+ReplaceGroups 1 5 //FAILURE allready happend and there is no group 1 now
+GetHighestLevel 1//FAILURE
+GetHighestLevel 5//return 9
+GetHighestLevel 4//FAILURE there is no group 4
+GetHighestLevel -1// return 9
+RemovePlayer 9 //success 
+GetHighestLevel 5// retrun 3 because of replaceGroups
+GetHighestLevel 1 //FAILURE
+GetHighestLevel -2//return 3
+RemovePlayer 1 //FAILURE
+RemovePlayer 3 //success(should remove player 3 from group 5)
+GetHighestLevel 5//FAILUER
+Quit
+//GetAllPlayersByLevel
+Init
+AddGroup 1 
+GetAllPlayersByLevel 1 //success
+GetAllPlayersByLevel 3 //Failure - group 3 doesn't exist
+GetAllPlayersByLevel -4 // Success, but should return NULL
+GetAllPlayersByLevel 0 //Invalid_input
+AddPlayer 1 1 1  // try to test if it works with a player
+GetAllPlayersByLevel 1 // Success, should return 1
+GetAllPlayersByLevel 3 //Failure, group 3 doesn't exist
+GetAllPlayersByLevel -4 //Success , should return 1
+//adding players
+AddPlayer 2 1 2 
+AddPlayer 3 1 3
+AddPlayer 4 1 4
+AddPlayer 5 1 5
+GetAllPlayersByLevel 1 //Success should return 5->4->3->2->1
+GetAllPlayersByLevel -4 //success,should return the same
+IncreaseLevel 1 1 // success
+GetAllPlayersByLevel -4// success should return now 5 -> 4-> 3->1 -> 2
+RemovePlayer 1 //success
+GetAllPlayersByLevel 1 //success trying to remove player 1,should be 5->4->3->2
+AddGroup 2 //succecss ,adding another group
+AddPlayer 6 2 3 //success
+GetAllPlayersByLevel -4 // should now print 6 too.
+ReplaceGroups 2 1 //group 2 ceases to exist.
+GetAllPlayersByLevel 1 // success
+GetAllPlayersByLevel 2 //failure( group 2 doesn't exist)
+GetAllPlayersByLevel -5 //success (should now print the same as two lines above)
+AddGroup 2 // Success, adding it again
+ReplaceGroups 1 2//success,trying to test if moving from 1 group to the other changes anything.
+GetAllPlayersByLevel 2 //success, should now print the same as 3 lines above
+RemovePlayer 1 // success
+GetAllPlayersByLevel -5 //success,trying to see what happens after removal
+//stress testing :^)
+Quit
+//GetGroupsHighestLevel (int NumOfGroups) //numofgroups<1
+Init
+GetGroupsHighestLevel 0 //invalid
+GetGroupsHighestLevel -2 //invalid
+//test2
+AddGroup 1 //sucess
+GetGroupsHighestLevel 1 //success -should return empty array
+//test 3
+AddPlayer 1 1 1// success
+GetGroupsHighestLevel 1 //success -should return array with size 1
+//test 4
+AddPlayer 2 1 2 //success
+GetGroupsHighestLevel 1 // SUCCESS -should return array with size 1
+GetGroupsHighestLevel 2 // Failure( there is only 1 non-empty group)
+//test 5
+AddGroup 2
+GetGroupsHighestLevel 1 //success
+GetGroupsHighestLevel 2 //failure -when 2 groups exist but only 1 is non-empty
+AddPlayer 3 2 3 // success
+GetGroupsHighestLevel 2 //success -now both are non empty.
+RemovePlayer 3
+GetGroupsHighestLevel 2 //failure -there is only one non empty group
+AddPlayer 3 2 3 //success -adding him again.
+//test 5.5 - remove and add again
+ReplaceGroup 2 1 //success
+GetGroupsHighestLevel 2//failure- there is only 1 group now.
+RemovePlayer 3  //success
+RemovePlayer 2  //success
+RemovePlayer 1 //success
+GetGroupsHighestLevel 2//failure - all groups are empty
+//now stress testing :^)
+AddGroup 2 //success
+AddGroup 3 //success
+AddGroup 4 //success
+AddGroup 5 //success
+AddGroup 6 //success
+AddGroup 7 //success
+AddGroup 8 //success
+AddGroup 9 //success
+AddGroup 10 //success
+AddPlayer 1 1 1 //success
+AddPlayer 2 2 2 //success
+AddPlayer 3 3 3 //success
+AddPlayer 4 4 4 //success
+AddPlayer 5 5 5 //success
+AddPlayer 6 6 6 //success
+AddPlayer 7 7 7 //success
+AddPlayer 8 8 8 //success
+AddPlayer 9 9 9 //success
+AddPlayer 10 10 10 //success
+GetGroupsHighestLevel 10 //SUCCESS
+GetGroupsHighestLevel 11 //failure( i think)
+RemovePlayer 10 ////success
+GetGroupsHighestLevel 9 //success
+GetGroupsHighestLevel 10 //failure 
+RemovePlayer 9 ////success
+GetGroupsHighestLevel 8 //success
+GetGroupsHighestLevel 9 //failure 
+RemovePlayer 8 ////success
+GetGroupsHighestLevel 7 //success
+GetGroupsHighestLevel 8 //failure 
+RemovePlayer 7 ////success
+GetGroupsHighestLevel 6 //success
+GetGroupsHighestLevel 7 //failure 
+RemovePlayer 6 ////success
+GetGroupsHighestLevel 5 //success
+GetGroupsHighestLevel 6 //failure
+RemovePlayer 5 ////success
+GetGroupsHighestLevel 4 //success
+GetGroupsHighestLevel 5 //failure 
+RemovePlayer 4 ////success
+GetGroupsHighestLevel 3 //success
+GetGroupsHighestLevel 4 //failure 
+RemovePlayer 3 ////success
+GetGroupsHighestLevel 2 //success
+GetGroupsHighestLevel 3 //failure 
+RemovePlayer 2 ////success
+GetGroupsHighestLevel 1 //success
+GetGroupsHighestLevel 2 //failure 
+RemovePlayer 1 ////success
+GetGroupsHighestLevel 0 //Invalid_input
+GetGroupsHighestLevel 1 //failure
+//more stress testing :^)
+AddPlayer 1 1 1 //success
+AddPlayer 2 2 2 //success
+AddPlayer 3 3 3 //success
+AddPlayer 4 4 4 //success
+AddPlayer 5 5 5 //success
+AddPlayer 6 6 6 //success
+AddPlayer 7 7 7 //success
+AddPlayer 8 8 8 //success
+AddPlayer 9 9 9 //success
+AddPlayer 10 10 10 //success
+GetGroupsHighestLevel 10 //SUCCESS
+GetGroupsHighestLevel 11 //failure( i think)
+ReplaceGroup 10 9
+GetGroupsHighestLevel 9 //success
+GetGroupsHighestLevel 10 //failure
+ReplaceGroup 9 8 //success
+GetGroupsHighestLevel 8 //success
+GetGroupsHighestLevel 9 //failure 
+ReplaceGroup 8 7//success
+GetGroupsHighestLevel 7 //success
+GetGroupsHighestLevel 8 //failure 
+ReplaceGroup 7 6 //success
+GetGroupsHighestLevel 6 //success
+GetGroupsHighestLevel 7 //failure 
+ReplaceGroup 6 5 //success
+GetGroupsHighestLevel 5 //success
+GetGroupsHighestLevel 6 //failure
+ReplaceGroup 5 4 //success
+GetGroupsHighestLevel 4 //success
+GetGroupsHighestLevel 5 //failure 
+ReplaceGroup 4 3 //success
+GetGroupsHighestLevel 3 //success
+GetGroupsHighestLevel 4 //failure 
+ReplaceGroup 3 2 //success
+GetGroupsHighestLevel 2 //success
+GetGroupsHighestLevel 3 //failure 
+ReplaceGroup 2 1 //success
+GetGroupsHighestLevel 1 //success
+GetGroupsHighestLevel 2 //failure 
+//now that Group 1 has 10 players, lets try that again :^)
+RemovePlayer 10 ////success
+GetGroupsHighestLevel 10 //failure 
+GetGroupsHighestLevel 1 //success
+RemovePlayer 9 ////success
+GetGroupsHighestLevel 9 //failure 
+GetGroupsHighestLevel 1 //success
+RemovePlayer 8 ////success
+GetGroupsHighestLevel 8 //failure 
+GetGroupsHighestLevel 1 //success
+RemovePlayer 7 ////success
+GetGroupsHighestLevel 7 //failure 
+GetGroupsHighestLevel 1 //success
+RemovePlayer 6 ////success
+GetGroupsHighestLevel 6 //failure
+GetGroupsHighestLevel 1 //success
+RemovePlayer 5 ////success
+GetGroupsHighestLevel 5 //failure 
+GetGroupsHighestLevel 1 //success
+RemovePlayer 4 ////success
+GetGroupsHighestLevel 4 //failure 
+GetGroupsHighestLevel 1 //success
+RemovePlayer 3 ////success
+GetGroupsHighestLevel 3 //failure
+GetGroupsHighestLevel 1 //success
+RemovePlayer 2 ////success
+GetGroupsHighestLevel 1 //success
+GetGroupsHighestLevel 2 //failure 
+RemovePlayer 1 ////success
+GetGroupsHighestLevel 0 //Invalid_input
+GetGroupsHighestLevel 1 //failure
+Quit
+//endoftesting GetGroupsHighestLevel

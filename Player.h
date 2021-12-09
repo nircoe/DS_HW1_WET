@@ -15,7 +15,7 @@ public:
     Player(int id, int level, Group *group);
     Player(const Player &) = default;
     Player() = delete;
-    ~Player() = default;
+    ~Player();
 
     int getId();
     int getLevel();
