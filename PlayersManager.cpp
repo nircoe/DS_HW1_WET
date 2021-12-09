@@ -73,7 +73,7 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
     StatusType st = g->RemovePlayerFromGroup(p);
     if (st != SUCCESS) // check if the RemovePlayerFromGroup succeed
         return st;
-    if (g->GetPlayerById().GetTreeSize() == 0) //we removed the last player
+    if (g->GetPlayerById()->GetTreeSize() == 0) //we removed the last player
     {
         if (!groups.Remove(g->GetId()))
             return FAILURE;
@@ -357,7 +357,16 @@ StatusType PlayersManager::GetAllPlayersByLevel(int GroupID, int **Players, int 
         return GetAllPlayersByLevel_AUX(&players_by_level, Players, numOfPlayers);
     }
     if (!groups.Exists(GroupID)) // the group doesn't exist
-        return FAILURE;
+    {
+        if (!empty_groups.Exists(GroupID))
+            return FAILURE;
+        else
+        {
+            *Players = NULL;
+            *numOfPlayers = 0;
+            return SUCCESS;
+        }
+    }
     Group *g = groups.Find(GroupID); // not gonna throw because its Exists
     return GetAllPlayersByLevel_AUX(g->GetPlayerByLevel(), Players, numOfPlayers);
 }
