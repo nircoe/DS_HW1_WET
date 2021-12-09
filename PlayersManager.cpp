@@ -13,6 +13,8 @@ StatusType PlayersManager::AddGroup(int GroupID)
     if (groups.Exists(GroupID) || empty_groups.Exists(GroupID)) // group already exists
         return FAILURE;
     Group *g = new Group(GroupID);
+    if(empty_groups.GetTreeSize() == 0)
+        empty_groups.Reset();
     if (!empty_groups.Insert(GroupID, g)) // check if Insert return false => only on allocation error
         return ALLOCATION_ERROR;
     return SUCCESS;
@@ -36,8 +38,24 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int Level)
     }
     else
         return FAILURE;
+    Group *new_group = g;
+    if (is_first_player) // move group from empty groups to not empty groups tree
+    {
+        new_group = new Group(*g);
+        if (!empty_groups.Remove(GroupID))
+            return ALLOCATION_ERROR;
+        if(empty_groups.GetTreeSize() == 0)
+            empty_groups.Reset();
+        if(groups.GetTreeSize() == 0)
+            groups.Reset();
+        if (!groups.Insert(GroupID, new_group))
+            return ALLOCATION_ERROR;
+        g = new_group;
+    }
     //Group *g = groups.Find(GroupID); // doesn't gonna throw because its Exists
     Player *p = new Player(PlayerID, Level, g);
+    if(players_by_id.GetTreeSize() == 0)
+        players_by_id.Reset();
     if (!players_by_id.Insert(PlayerID, p)) // check if Insert return false => only on allocation error
         return ALLOCATION_ERROR;
     AVLTree<Player> *p_tree;
@@ -46,21 +64,18 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int Level)
     else
     {
         p_tree = new AVLTree<Player>;
+        if(players_by_level.GetTreeSize() == 0)
+            players_by_level.Reset();
         if (!players_by_level.Insert(Level, p_tree)) // if Insert return false => allocation error
             return ALLOCATION_ERROR;
     }
+    if(p_tree->GetTreeSize() == 0)
+        p_tree->Reset();
     if (!p_tree->Insert(PlayerID, p)) // if Insert return false => allocation error
         return ALLOCATION_ERROR;
     StatusType st = g->AddPlayerToGroup(p);
     if (st != SUCCESS) // if AddPlayerToGroup didn't succeed so return the StatusType that the function returned
         return st;
-    if (is_first_player) // move group from empty groups to not empty groups tree
-    {
-        if (!empty_groups.Remove(GroupID))
-            return ALLOCATION_ERROR;
-        if (!groups.Insert(GroupID, g))
-            return ALLOCATION_ERROR;
-    }
     return SUCCESS;
 }
 StatusType PlayersManager::RemovePlayer(int PlayerID)
@@ -86,8 +101,12 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
         return FAILURE;
     if(p_tree->GetTreeSize() == 0)
         players_by_level.Remove(p->getLevel());
+    if(players_by_level.GetTreeSize() == 0)
+        players_by_level.Reset();
     if (!players_by_id.Remove(p->getId())) // Remove will return false only if the tree is empty, not supposed to happened
         return FAILURE;
+    if(players_by_id.GetTreeSize() == 0)
+        players_by_id.Reset();
     delete p;
     return SUCCESS;
 }

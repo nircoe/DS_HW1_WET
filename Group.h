@@ -10,6 +10,7 @@ class Player;
 class Group
 {
     int id;
+    int size;
     AVLTree<Player> *players_by_id;
     AVLTree<AVLTree<Player>> *players_by_level;
 

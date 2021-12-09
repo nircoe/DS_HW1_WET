@@ -42,15 +42,15 @@ class AVLNode
         }
         catch(const std::exception& e) { }
     }
-    int GetKey() const { return (this == 0) ? -1 : key; }
-    T *GetData() { return (this == 0) ? nullptr : data; }
+    int GetKey() const { return (this != 0) ? key : -1; }
+    T *GetData() { return (this != 0) ? data : nullptr; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
-    AVLNode *GetLeft() const { return (this == 0) ? nullptr : left; }
+    AVLNode *GetLeft() const { return (this != 0) ? left : nullptr; }
     void SetRight(AVLNode *new_right) { right = new_right; }
-    AVLNode *GetRight() const { return (this == 0) ? nullptr : right; }
+    AVLNode *GetRight() const { return (this != 0) ? right : nullptr; }
     void SetParent(AVLNode *new_parent) { parent = new_parent; }
-    AVLNode *GetParent() const { return (this == 0) ? nullptr : parent; }
-    int GetHeight() const { return (this == 0) ? -1 : height; }
+    AVLNode *GetParent() const { return (this != 0) ? parent : nullptr; }
+    int GetHeight() const { return (this != 0) ? height : -1; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
     void updateHeight() { this->height = 1 + std::max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
 
@@ -370,6 +370,10 @@ private:
             delete node;
         }
     }
+    void Reset_Aux()
+    {
+        root = highest = lowest = nullptr;
+    }
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
@@ -411,6 +415,10 @@ public:
             size = -1;
         }
         catch(const std::exception& e) { }
+    }
+    void Reset()
+    {
+        Reset_Aux();
     }
     AVLNode<T> *GetRoot() const
     {

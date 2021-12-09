@@ -77,4 +77,5 @@ void Quit(void **DS)
 {
     PlayersManager *pm = (PlayersManager *)(*DS);
     pm->Quit(pm);
+    *DS = nullptr;
 }

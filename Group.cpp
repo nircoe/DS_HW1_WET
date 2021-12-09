@@ -1,7 +1,7 @@
 #include "Group.h"
 #include "AVLTree.h"
 
-Group::Group(int id) : id(id)
+Group::Group(int id) : id(id) , size(0)
 {
     players_by_id = new AVLTree<Player>();
     players_by_level = new AVLTree<AVLTree<Player>>();
@@ -13,6 +13,7 @@ Group::~Group()
         delete this->players_by_id;
         delete this->players_by_level;
         this->id = -1;
+        this->size = -1;
     }
     catch(const std::exception& e) { }
 }
@@ -22,6 +23,11 @@ int Group::GetId()
 }
 StatusType Group::AddPlayerToGroup(Player *p)
 {
+    if(size == 0)
+    {
+        players_by_id->Reset();
+        players_by_level->Reset();
+    }
     if (players_by_id->Exists(p->getId()))
         return FAILURE;
     if (!players_by_id->Insert(p->getId(), p)) // if Insert return false => allocation error
@@ -31,7 +37,7 @@ StatusType Group::AddPlayerToGroup(Player *p)
         p_tree = players_by_level->Find(p->getLevel()); // not gonna throw because its Exists
     else
     {
-        p_tree = new AVLTree<Player>;
+        p_tree = new AVLTree<Player>();
         if (!players_by_level->Insert(p->getLevel(), p_tree)) // if Insert return false => allocation error
         {
             delete p_tree;
@@ -40,6 +46,7 @@ StatusType Group::AddPlayerToGroup(Player *p)
     }
     if (!p_tree->Insert(p->getId(), p)) // if Insert return false => allocation error
         return ALLOCATION_ERROR;
+    size++;
     return SUCCESS;
 }
 StatusType Group::RemovePlayerFromGroup(Player *p)
@@ -51,6 +58,12 @@ StatusType Group::RemovePlayerFromGroup(Player *p)
     p_tree->Remove(p->getId());                                     // doesn't matter if return true or false
     if (p_tree->IsEmpty())                                          //no more players in this level tree, so we can remove it
         players_by_level->Remove(p->getLevel());
+    size--;
+    if (size == 0)
+    {
+        players_by_id->Reset();
+        players_by_level->Reset();
+    }
     return SUCCESS;
 }
 
