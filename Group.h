@@ -23,6 +23,7 @@ public:
     int GetId();
     StatusType AddPlayerToGroup(Player *p);
     StatusType RemovePlayerFromGroup(Player *p);
+    StatusType RemovePlayerFromGroupWithoutDelete(Player *p);
     AVLTree<Player>* GetPlayerById();
     AVLTree<AVLTree<Player>>* GetPlayerByLevel();
     void SetTrees(AVLTree<Player> *group_players_by_id, AVLTree<AVLTree<Player>> *group_players_by_level);

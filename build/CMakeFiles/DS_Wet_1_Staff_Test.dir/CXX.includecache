@@ -14,6 +14,12 @@ iostream
 AVLExceptions.h
 /home/nircoe/Desktop/DS_HW1_WET/AVLExceptions.h
 
+/home/nircoe/Desktop/DS_HW1_WET/Group.cpp
+Group.h
+/home/nircoe/Desktop/DS_HW1_WET/Group.h
+AVLTree.h
+/home/nircoe/Desktop/DS_HW1_WET/AVLTree.h
+
 /home/nircoe/Desktop/DS_HW1_WET/Group.h
 AVLTree.h
 /home/nircoe/Desktop/DS_HW1_WET/AVLTree.h
@@ -21,6 +27,10 @@ Player.h
 /home/nircoe/Desktop/DS_HW1_WET/Player.h
 library1.h
 /home/nircoe/Desktop/DS_HW1_WET/library1.h
+
+/home/nircoe/Desktop/DS_HW1_WET/Player.cpp
+Player.h
+/home/nircoe/Desktop/DS_HW1_WET/Player.h
 
 /home/nircoe/Desktop/DS_HW1_WET/Player.h
 Group.h
@@ -41,6 +51,12 @@ Player.h
 /home/nircoe/Desktop/DS_HW1_WET/Player.h
 Group.h
 /home/nircoe/Desktop/DS_HW1_WET/Group.h
+
+/home/nircoe/Desktop/DS_HW1_WET/library1.cpp
+library1.h
+/home/nircoe/Desktop/DS_HW1_WET/library1.h
+PlayersManager.h
+/home/nircoe/Desktop/DS_HW1_WET/PlayersManager.h
 
 /home/nircoe/Desktop/DS_HW1_WET/library1.h
 

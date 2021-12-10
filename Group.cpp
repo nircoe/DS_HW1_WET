@@ -72,7 +72,27 @@ StatusType Group::RemovePlayerFromGroup(Player *p)
     }
     return SUCCESS;
 }
-
+StatusType Group::RemovePlayerFromGroupWithoutDelete(Player *p)
+{
+    if (!group_players_by_id->Exists(p->getId()) /* || !players_by_level.Exists(p.getLevel())*/)
+        return FAILURE;
+    int p_level = p->getLevel(), p_id = p->getId();                  // if the player exist in the id's tree so the level tree should exist too
+    group_players_by_id->RemoveWithoutDelete(p_id);                               // not gonna return false because p.getId Exists in the tree (so the tree is not empty)
+    AVLTree<Player> *p_tree = group_players_by_level->Find(p_level); // not gonna throw because it is Exists
+    p_tree->RemoveWithoutDelete(p_id);                                            // doesn't matter if return true or false
+    if (p_tree->IsEmpty())                                           //no more players in this level tree, so we can remove it
+    {
+        p_tree->Reset();
+        group_players_by_level->RemoveWithoutDelete(p_level);
+    }
+    size--;
+    if (size == 0)
+    {
+        group_players_by_id->Reset();
+        group_players_by_level->Reset();
+    }
+    return SUCCESS;
+}
 AVLTree<Player> *Group::GetPlayerById()
 {
     /*if (this != 0)
@@ -97,6 +117,9 @@ void Group::SetTrees(AVLTree<Player> *by_id, AVLTree<AVLTree<Player>> *by_level)
 
 void Group::ClearGroup()
 {
+    Player **players = this->group_players_by_id->GetDataArray();
+    for (int i = 0; i < size;i++)
+        RemovePlayerFromGroupWithoutDelete(players[i]);
     this->group_players_by_id->Reset();
     this->group_players_by_level->Reset();
     this->id = -1;

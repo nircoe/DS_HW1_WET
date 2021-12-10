@@ -29,6 +29,7 @@ class AVLNode
 
     AVLNode();
     AVLNode(int key, T *data) : key(key), data(data), right(nullptr), left(nullptr), parent(nullptr), height(0) {}
+    AVLNode(const AVLNode<T> &) = default;
     ~AVLNode()
     {
         try
@@ -44,6 +45,7 @@ class AVLNode
     }
     int GetKey() const { return (this != 0) ? key : -1; }
     T *GetData() { return (this != 0) ? data : nullptr; }
+    void SetData(T *new_data) { data = new_data; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
     AVLNode *GetLeft() const { return (this != 0) ? left : nullptr; }
     void SetRight(AVLNode *new_right) { right = new_right; }
@@ -53,7 +55,7 @@ class AVLNode
     int GetHeight() const { return (this != 0) ? height : -1; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
     void updateHeight() { this->height = 1 + std::max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
-    void ClearNode() { data = nullptr; parent = left = right = nullptr; }
+    void ClearNode() { parent = left = right = nullptr; }
 
     friend class AVLTree<T>;
     //friend class Group;
@@ -237,7 +239,7 @@ private:
                     if(lowest == child)
                         lowest = current;
                     child->ClearNode();
-                    delete child;
+                    //child = nullptr;
                     //current = nullptr;
                 }
                 else //node has one child
@@ -258,7 +260,7 @@ private:
                     if (child->right)
                         child->right->SetParent(current);
                     child->ClearNode();
-                    delete child;
+                    //child = nullptr;
                     //child = nullptr;
                 }
             }
@@ -312,9 +314,7 @@ private:
                         parent->GetLeft() == current ? parent->SetLeft(nullptr) : parent->SetRight(nullptr);
                         current = parent;
                     }
-                    child->SetParent(nullptr);
-                    child->SetLeft(nullptr);
-                    child->SetRight(nullptr);
+                    child->ClearNode();
                     delete child;
                     //current = nullptr;
                 }
@@ -335,9 +335,7 @@ private:
                         child->left->SetParent(current);
                     if(child->right)
                         child->right->SetParent(current);
-                    child->SetLeft(nullptr);
-                    child->SetParent(nullptr);
-                    child->SetRight(nullptr);
+                    child->ClearNode();
                     delete child;
                     //child = nullptr;
                 }
@@ -354,25 +352,6 @@ private:
                 current->data = replacement->data;
                 replacement->data = temp;
                 current->left = RemoveNode(current->left, replacement->key);
-
-                /* previous code :
-                
-                 AVLNode<T> *replacement;
-                if (current->left != nullptr)
-                {
-                    replacement = GetGreatestNode(current->left);
-                    current->key = replacement->key;
-                    current->data = replacement->data;
-                    current->left = RemoveNode(current->left, replacement->key);
-                }
-                else
-                {
-                    replacement = GetSmallestNode(current->right);
-                    current->key = replacement->key;
-                    current->data = replacement->data;
-                    current->right = RemoveNode(current->right, replacement->data);
-                }
-                */
             }
         }
         //tree had one node
@@ -467,6 +446,19 @@ public:
         lowest = min;
         size = last_index + 1;
     }
+    void CopyCons_AUX(AVLNode<T>* copy)
+    {
+        if(!copy)
+            return;
+        CopyCons_AUX(copy->GetLeft());
+        T *new_data = new T(*(copy->GetData()));
+        this->Insert(copy->GetKey(), new_data);
+        CopyCons_AUX(copy->GetRight());
+    }
+    AVLTree(const AVLTree<T> &tree)
+    {
+        CopyCons_AUX(tree.GetRoot());
+    }
     ~AVLTree()
     {
         try
@@ -502,6 +494,19 @@ public:
     void Reset()
     {
         Reset_Aux();
+    }
+    void SwitchNodeData(int switch_key, T* new_data, AVLNode<T>* node)
+    {
+        if(!node)
+            return;
+        if(node->GetKey() == switch_key)
+            node->SetData(new_data);
+        else if (node->GetKey() > switch_key)
+        {
+            SwitchNodeData(switch_key, new_data, node->GetLeft());
+        }
+        else if(node->GetKey() < switch_key)
+            SwitchNodeData(switch_key, new_data, node->GetRight());
     }
     AVLNode<T> *GetRoot() const
     {
