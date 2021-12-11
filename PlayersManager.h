@@ -8,11 +8,11 @@
 
 class PlayersManager
 {
-    AVLTree<Player> players_by_id;
-    AVLTree<AVLTree<Player>> players_by_level;
-    AVLTree<Group> groups;
-    AVLTree<Group> empty_groups;
-    int* GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> *tree, int *numOfPlayers);
+    AVLTree<shared_ptr<Player>> players_by_id;
+    AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> players_by_level;
+    AVLTree<shared_ptr<Group>> groups;
+    AVLTree<shared_ptr<Group>> empty_groups;
+    int* GetAllPlayersByLevel_AUX(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> tree, int numOfPlayers);
 
 public:
     PlayersManager();

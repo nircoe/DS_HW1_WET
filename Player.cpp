@@ -1,38 +1,24 @@
 #include "Player.h"
 
-Player::Player(int id, int level, Group *group) : id(id), level(level), group(group) {}
-Player::~Player()
+Player::Player() : player_id(-1), player_level(-1), player_group(nullptr) {}
+Player::Player(int p_id, int p_level, shared_ptr<Group> p_group) : player_id(p_id), player_level(p_level), player_group(p_group) {}
+int Player::GetId()
 {
-    this->id = -1;
-    this->level = -1;
-    this->group = nullptr;
+    return (this != 0) ? this->player_id : -1;
 }
-int Player::getId()
+int Player::GetLevel()
 {
-    /*if(this != 0)
-        return this->id;
-    return -1; */
-    return (this != 0) ? this->id : -1;
+    return (this != 0) ? this->player_level : -1;
 }
-int Player::getLevel()
+shared_ptr<Group> Player::GetGroup()
 {
-    /*if (this != 0)
-        return this->level;
-    return -1;*/
-    return (this != 0) ? this->level : -1;
+    return (this != 0) ? this->player_group : nullptr;
 }
-Group* Player::getGroup()
+void Player::SetGroup(shared_ptr<Group> new_group)
 {
-    /*if (this != 0)
-        return this->group;
-    return nullptr;*/
-    return (this != 0) ? this->group : nullptr;
+    this->player_group = new_group;
 }
-void Player::setGroup(Group *new_group)
+void Player::IncrementLevel(int increment)
 {
-    group = new_group;
-}
-void Player::incrementLevel(int increment)
-{
-    level += increment;
+    this->player_level += increment;
 }

@@ -6,23 +6,22 @@ class Group;
 
 class Player
 {
-    int id;
-    int level;
-    //int groupId;
-    Group *group;
+    int player_id;
+    int player_level;
+    shared_ptr<Group> player_group;
 
 public:
-    Player(int id, int level, Group *group);
+    Player();
+    Player(int id, int level, shared_ptr<Group> group);
     Player(const Player &) = default;
-    Player() = delete;
-    ~Player();
+    ~Player() = default;
+    Player &operator=(const Player &) = default;
 
-    int getId();
-    int getLevel();
-    //int getGroupId();
-    Group *getGroup();
-    void setGroup(Group *new_group);
-    void incrementLevel(int increment);
+    int GetId();
+    int GetLevel();
+    shared_ptr<Group> GetGroup();
+    void SetGroup(shared_ptr<Group> new_group);
+    void IncrementLevel(int increment);
 
     //friend void LTRInOrderForPlayers(AVLNode<Player> *node, int **array, int *index);
     //friend void RTLInOrderForPlayers(AVLNode<AVLTree<Player>> *node, int **array, int *index);
