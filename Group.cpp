@@ -5,6 +5,12 @@ Group::Group(int g_id) : group_id(g_id) , group_size(0)
 {
     group_players_by_level = AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>>();
 }
+Group::Group(int g_id, int g_size, AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &g_players_by_level)
+{
+    group_id = g_id;
+    group_size = g_size;
+    group_players_by_level = g_players_by_level;
+}
 int Group::GetId()
 {
     return (this != 0) ? this->group_id : -1;
@@ -44,13 +50,12 @@ StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
     this->group_size--;
     return SUCCESS;
 }
-AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &Group::GetPlayerByLevel()
+AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> *Group::GetPlayerByLevel()
 {
-    return this->group_players_by_level;
+    return &(this->group_players_by_level);
 }
 void Group::SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &by_level, int new_size)
 {
     this->group_size = new_size;
-    this->group_players_by_level.~AVLTree();
     this->group_players_by_level = by_level;
 }

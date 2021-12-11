@@ -13,11 +13,11 @@ class PlayersManager
     AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> players_by_level;
     AVLTree<shared_ptr<Group>> groups;
     AVLTree<shared_ptr<Group>> empty_groups;
-    int* GetAllPlayersByLevel_AUX(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> tree, int numOfPlayers);
+    int* GetAllPlayersByLevel_AUX(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &tree, int numOfPlayers);
 
 public:
     PlayersManager();
-    ~PlayersManager() = default;
+    ~PlayersManager();
     StatusType AddGroup(int GroupID);
     StatusType AddPlayer(int PlayerID, int GroupID, int Level);
     StatusType RemovePlayer(int PlayerID);

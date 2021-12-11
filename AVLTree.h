@@ -13,6 +13,12 @@ class AVLTree;
 template <typename type>
 AVLTree<type> *MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2);
 template <typename type>
+void DeletePlayersByIdTree(AVLNode<type> *node);
+template <typename type>
+void DeletePlayersByLevelTree(AVLNode<type> *node);
+template <typename type>
+void DeleteGroupsTree(AVLNode<type> *node);
+template <typename type>
 void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size);
 template <typename type>
 void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
@@ -39,6 +45,7 @@ class AVLNode
     int GetMax(int a, int b) { return a > b ? a : b; }
     int GetKey() const { return (this != 0) ? key : -1; }
     T GetData() { return this->data; }
+    T &GetDataRef() { return this->data; }
     void SetData(T new_data) { data = new_data; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
     AVLNode *GetLeft() const { return (this != 0) ? left : nullptr; }
@@ -53,6 +60,12 @@ class AVLNode
 
     friend class AVLTree<T>;
 
+    template <typename type>
+    friend void DeletePlayersByIdTree(AVLNode<type> *node);
+    template <typename type>
+    friend void DeletePlayersByLevelTree(AVLNode<type> *node);
+    template <typename type>
+    friend void DeleteGroupsTree(AVLNode<type> *node);
     template <typename type>
     friend void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size);
     template <typename type>
@@ -218,12 +231,14 @@ private:
                 AVLNode<T> *child = current->GetLeft() ? current->GetLeft() : current->GetRight();
                 if (child == nullptr) //node is leaf
                 {
+                
                     //disconnect current from his parent
                     AVLNode<T> *parent = current->GetParent();
                     if (parent) //current is not the root of the tree
                     {
                         parent->GetLeft() == current ? parent->SetLeft(nullptr) : parent->SetRight(nullptr);
                     }
+                    current->SetParent(nullptr);
                 }
                 else //node has one child
                 {
@@ -236,7 +251,7 @@ private:
                     child->SetParent(parent);
                 }
                 delete current;
-                current = nullptr;
+                current = child;
             }
             else //node has two children
             {
@@ -357,20 +372,27 @@ public:
         this->lowest = GetSmallestNode(root);
         this->size = size_of_array;
     }
-    /*void CopyCons_AUX(AVLNode<T>* copy)
+    AVLNode<T> *CopyTree(AVLNode<T>* copy, AVLNode<T>* node_parent)
     {
         if(!copy)
-            return;
-        CopyCons_AUX(copy->GetLeft());
-        T new_data = T(copy->GetData());
-        //T *new_data = new T(*(copy->GetData().get()));
-        this->Insert(copy->GetKey(), new_data);
-        CopyCons_AUX(copy->GetRight());
+            return nullptr;
+        AVLNode<T> *copied_node = new AVLNode<T>(copy->GetKey(), copy->GetData());
+        copied_node->SetParent(node_parent);
+        copied_node->height = copy->height;
+        copied_node->SetLeft(CopyTree(copy->GetLeft(), copied_node));
+        copied_node->SetRight(CopyTree(copy->GetRight(), copied_node));
+        return copied_node;
     }
-    AVLTree(const AVLTree<T> &tree)
+    AVLTree &operator=(const AVLTree &copy)
     {
-        CopyCons_AUX(tree.GetRoot());
-    }*/
+        if(this == &copy) return *this;
+        this->PostOrderDelete(this->root);
+        this->root = this->CopyTree(copy.root, nullptr);
+        this->highest = GetGreatestNode(this->root);
+        this->lowest = GetSmallestNode(this->root);
+        this->size = copy.size;
+        return *this;
+    }
     ~AVLTree()
     {
         try
@@ -398,7 +420,7 @@ public:
     }
     AVLNode<T> *GetRoot() const
     {
-        return root;
+        return (this != 0) ? root : nullptr;
     }
     int GetTreeSize() const
     {
@@ -406,21 +428,19 @@ public:
     }
     T GetRootData() const
     {
-        if (root != nullptr)
-            return root->GetData();
-        return nullptr;
+        return root->GetData();
+    }
+    T &GetRootDataRef() const
+    {
+        return root->GetDataRef();
     }
     T GetHighest() const
     {
-        if (highest != nullptr)
-            return highest->GetData();
-        return nullptr;
+        return highest->GetData();
     }
     T GetLowest() const
     {
-        if (lowest != nullptr)
-            return lowest->GetData();
-        return nullptr;
+        return lowest->GetData();
     }
     bool IsEmpty()
     {
@@ -494,11 +514,11 @@ public:
                 this->lowest = lowest->GetParent();
         }
         root = RemoveNode(root, key); // it will return nullptr only if root == nullptr
-        if (!root)                    // RemoveNode failure, root was nullptr, tree is empty
-            return false;
         size--;
         if(size == 0)
             root = nullptr;
+        else if (!root) // RemoveNode failure, root was nullptr, tree is empty
+            return false;
         return true; // RemoveNode succeed
     }
     void Print()
@@ -527,6 +547,12 @@ public:
     template <typename type>
     friend AVLTree<type> *MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2);
     template <typename type>
+    friend void DeletePlayersByIdTree(AVLNode<type> *node);
+    template <typename type>
+    friend void DeletePlayersByLevelTree(AVLNode<type> *node);
+    template <typename type>
+    friend void DeleteGroupsTree(AVLNode<type> *node);
+    template <typename type>
     friend void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size);
     template <typename type>
     friend void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
@@ -535,12 +561,43 @@ public:
 };
 
 template <typename type>
+void DeletePlayersByIdTree(AVLNode<type> *node)
+{
+    if(!node) return;
+    DeletePlayersByIdTree(node->GetLeft());
+    node->GetData().get()->GetGroup().reset();
+    node->GetData().get()->SetGroup(nullptr);
+    DeletePlayersByIdTree(node->GetRight());
+    node->GetData().reset();
+}
+template <typename type>
+void DeletePlayersByLevelTree(AVLNode<type> *node)
+{
+    if (!node)
+        return;
+    DeletePlayersByLevelTree(node->GetLeft());
+    DeletePlayersByIdTree(node->GetData().get()->GetRoot());
+    DeletePlayersByLevelTree(node->GetRight());
+    node->GetData().reset();
+}
+template <typename type>
+void DeleteGroupsTree(AVLNode<type> *node)
+{
+    if(!node)
+        return;
+    DeleteGroupsTree(node->GetLeft());
+    DeletePlayersByLevelTree(node->GetData().get()->GetPlayerByLevel()->GetRoot());
+    DeleteGroupsTree(node->GetRight());
+    node->GetData().reset();
+}
+
+template <typename type>
 void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size)
 {
     if (!node || *index >= size)
         return;
     LTRInOrderForGroups(node->GetLeft(), array, index, size);
-    int id = node->GetData().get()->GetPlayerByLevel().GetHighest().get()->GetLowest().get()->GetId();
+    int id = node->GetData().get()->GetPlayerByLevel()->GetHighest().get()->GetLowest().get()->GetId();
     (*array)[*index] = id;
     ++(*index);
     // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group
