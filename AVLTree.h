@@ -30,7 +30,7 @@ class AVLNode
     int height;
 
     AVLNode();
-    AVLNode(int &new_key, const T &new_data) : 
+    AVLNode(int new_key, T new_data) : 
             key(new_key), data(new_data),
                 right(nullptr), left(nullptr), parent(nullptr), height(0) {}
     AVLNode(const AVLNode<T> &) = default;
@@ -473,6 +473,8 @@ public:
         if (!root)                    // RemoveNode failure, root was nullptr, tree is empty
             return false;
         size--;
+        if(size == 0)
+            root = nullptr;
         return true; // RemoveNode succeed
     }
     void Print()

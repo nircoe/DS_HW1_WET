@@ -48,7 +48,7 @@ AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &Group::GetPlayerByLevel()
 {
     return this->group_players_by_level;
 }
-void Group::SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> by_level, int new_size)
+void Group::SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &by_level, int new_size)
 {
     this->group_size = new_size;
     this->group_players_by_level = by_level;

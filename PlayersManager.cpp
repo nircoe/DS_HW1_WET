@@ -88,6 +88,15 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
     p.reset();
     return SUCCESS;
 }
+static void SetReplacedGroup(shared_ptr<AVLTree<shared_ptr<Player>>> level_tree, shared_ptr<Group> replacement_group)
+{
+    shared_ptr<Player> *players = level_tree.get()->GetDataArray();
+    int n = level_tree.get()->GetTreeSize();
+    for (int i = 0; i < n; i++)
+        players[i].get()->SetGroup(replacement_group);
+    delete[] players;
+}
+
 StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
 {
     if (GroupID <= 0 || ReplacementID <= 0 || GroupID == ReplacementID)
@@ -99,24 +108,24 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     }
     if (!groups.Exists(GroupID)) //couldn`t find groupId
         return FAILURE;
-    Group *replacement_group, *current_group;
+    shared_ptr<Group> replacement_group, current_group;
     if (groups.Exists(ReplacementID))
     {
-        replacement_group = groups.Find(ReplacementID).get();
+        replacement_group = groups.Find(ReplacementID);
     }
     else if (empty_groups.Exists(ReplacementID))
     {
-        replacement_group = empty_groups.Find(ReplacementID).get();
+        replacement_group = empty_groups.Find(ReplacementID);
     }
     else //couldn`t find replacementId
         return FAILURE;
-    current_group = groups.Find(GroupID).get(); //pull groups from tree
+    current_group = groups.Find(GroupID); //pull groups from tree
     // create and merge trees by level:
-    int n1 = current_group->GetPlayerByLevel().GetTreeSize(),
-        n2 = replacement_group->GetPlayerByLevel().GetTreeSize();
+    int n1 = current_group.get()->GetPlayerByLevel().GetTreeSize(),
+        n2 = replacement_group.get()->GetPlayerByLevel().GetTreeSize();
     shared_ptr<AVLTree<shared_ptr<Player>>> *group_levels_array, *replacement_levels_array, *merged_levels_array;
-    group_levels_array = current_group->GetPlayerByLevel().GetDataArray();
-    replacement_levels_array = replacement_group->GetPlayerByLevel().GetDataArray();
+    group_levels_array = current_group.get()->GetPlayerByLevel().GetDataArray();
+    replacement_levels_array = replacement_group.get()->GetPlayerByLevel().GetDataArray();
     merged_levels_array = new shared_ptr<AVLTree<shared_ptr<Player>>>[n1 + n2];
     int *merged_keys = new int[n1 + n2];
     //merge arrays
@@ -130,6 +139,7 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
         {
             merged_levels_array[j] = group_levels_array[i1];
             merged_keys[j] = l1;
+            SetReplacedGroup(merged_levels_array[j], replacement_group);
             i1++;
         }
         else if (l1 > l2)
@@ -147,6 +157,8 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
             delete tr;
             //put sp in merged_level_trees
             merged_levels_array[j] = sp;
+            merged_keys[j] = l1;
+            SetReplacedGroup(merged_levels_array[j], replacement_group);
         }
         j++;
     }
@@ -154,6 +166,7 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     {
         merged_levels_array[j] = group_levels_array[i1];
         merged_keys[j] = group_levels_array[i1].get()->GetRootData().get()->GetLevel();
+        SetReplacedGroup(merged_levels_array[j], replacement_group);
         i1++;
         j++;
     }
@@ -239,7 +252,7 @@ StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     if (!group_highest_level_tree.get())                                                                      // there is no players in this group
         return SUCCESS;
     shared_ptr<Player> highest_player = group_highest_level_tree.get()->GetLowest(); // get the lowest node in the tree => the highest player
-    if (!highest_player)                                                             // there is no players in this group
+    if (!highest_player.get())                                                             // there is no players in this group
         return SUCCESS;
     *PlayerID = highest_player.get()->GetId();
     return SUCCESS;

@@ -25,7 +25,7 @@ public:
     StatusType RemovePlayerFromGroup(int p_id, int p_level);
     StatusType RemovePlayerFromGroupWithoutDelete(Player *p);
     AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &GetPlayerByLevel();
-    void SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> by_level, int new_size);
+    void SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &by_level, int new_size);
 };
 
 #endif
