@@ -1,104 +1,55 @@
 #include "Group.h"
 #include "AVLTree.h"
 
-Group::Group(int id) : id(id) , size(0)
+Group::Group(int g_id) : group_id(g_id) , group_size(0)
 {
-    group_players_by_id = new AVLTree<Player>();
-    group_players_by_level = new AVLTree<AVLTree<Player>>();
-    group_players_by_id->Reset();
-    group_players_by_level->Reset();
-}
-Group::~Group()
-{
-    try
-    {
-        delete this->group_players_by_id;
-        delete this->group_players_by_level;
-        this->id = -1;
-        this->size = -1;
-    }
-    catch(const std::exception& e) { }
+    group_players_by_level = AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>>();
 }
 int Group::GetId()
 {
-    return id;
+    return (this != 0) ? this->group_id : -1;
 }
-StatusType Group::AddPlayerToGroup(Player *p)
+int Group::GetSize()
 {
-    if(size == 0)
-    {
-        group_players_by_id->Reset();
-        group_players_by_level->Reset();
-    }
-    if (group_players_by_id->Exists(p->getId()))
-        return FAILURE;
-    if (!group_players_by_id->Insert(p->getId(), p)) // if Insert return false => allocation error
-        return ALLOCATION_ERROR;
-    AVLTree<Player> *p_tree;
-    if (group_players_by_level->Exists(p->getLevel()))  //this level tree exists
-        p_tree = group_players_by_level->Find(p->getLevel()); // not gonna throw because its Exists
+    return (this != 0) ? this->group_size : -1;
+}
+StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
+{
+    int p_id = p.get()->GetId(), p_level = p.get()->GetLevel();
+    shared_ptr<AVLTree<shared_ptr<Player>>> p_tree;
+    if (group_players_by_level.Exists(p_level))  //this level tree exists
+        p_tree = group_players_by_level.Find(p_level);
     else
     {
-        p_tree = new AVLTree<Player>();
-        if (!group_players_by_level->Insert(p->getLevel(), p_tree)) // if Insert return false => allocation error
+        p_tree = make_shared<AVLTree<shared_ptr<Player>>>();
+        if (!group_players_by_level.Insert(p_level, p_tree)) // if Insert return false => allocation error
         {
-            delete p_tree;
+            p_tree.reset();
             return ALLOCATION_ERROR;
         }
     }
-    if (!p_tree->Insert(p->getId(), p)) // if Insert return false => allocation error
+    if (!p_tree.get()->Insert(p.get()->GetId(), p)) // if Insert return false => allocation error
         return ALLOCATION_ERROR;
-    size++;
+    this->group_size++;
     return SUCCESS;
 }
-StatusType Group::RemovePlayerFromGroup(Player *p)
+StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
 {
-    if (!group_players_by_id->Exists(p->getId()) /* || !players_by_level.Exists(p.getLevel())*/)
-        return FAILURE;
-    int p_level = p->getLevel(), p_id = p->getId();                                    // if the player exist in the id's tree so the level tree should exist too
-    group_players_by_id->Remove(p_id);                        // not gonna return false because p.getId Exists in the tree (so the tree is not empty)
-    AVLTree<Player> *p_tree = group_players_by_level->Find(p_level); // not gonna throw because it is Exists
-    p_tree->Remove(p_id);                                     // doesn't matter if return true or false
-    if (p_tree->IsEmpty())  //no more players in this level tree, so we can remove it
+    shared_ptr<AVLTree<shared_ptr<Player>>> p_tree = group_players_by_level.Find(p_level); // not gonna throw because it is Exists
+    p_tree.get()->Remove(p_id);                               // doesn't matter if return true or false
+    if (p_tree.get()->GetTreeSize() == 0)  //no more players in this level tree, so we can remove it
     {
-        p_tree->Reset();
-        group_players_by_level->Remove(p_level);
+        group_players_by_level.Remove(p_level);
     }
-    size--;
-    if (size == 0)
-    {
-        group_players_by_id->Reset();
-        group_players_by_level->Reset();
-    }
+    this->group_size--;
     return SUCCESS;
 }
-
-AVLTree<Player> *Group::GetPlayerById()
+AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &Group::GetPlayerByLevel()
 {
-    /*if (this != 0)
-        return &players_by_id;
-    return nullptr;*/
-    return (this != 0) ? group_players_by_id : nullptr;
+    return this->group_players_by_level;
 }
-
-AVLTree<AVLTree<Player>> *Group::GetPlayerByLevel()
+void Group::SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> by_level, int new_size)
 {
-    /*if (this != 0)
-        return &players_by_level;
-    return nullptr;*/
-    return (this != 0) ? group_players_by_level : nullptr;
-}
-void Group::SetTrees(AVLTree<Player> *by_id, AVLTree<AVLTree<Player>> *by_level)
-{
-    this->size = by_id->GetTreeSize();
-    this->group_players_by_id = by_id;
+    this->group_size = new_size;
     this->group_players_by_level = by_level;
-}
-
-void Group::ClearGroup()
-{
-    this->group_players_by_id->Reset();
-    this->group_players_by_level->Reset();
-    this->id = -1;
-    this->size = 0;
 }

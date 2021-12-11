@@ -1,3 +1,8 @@
 Init
 AddGroup 1
+AddGroup 2
+AddPlayer 1 1 1
+AddPlayer 2 2 4
+ReplaceGroup 1 2
+IncreaseLevel 1 5
 Quit

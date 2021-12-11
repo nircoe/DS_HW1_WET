@@ -9,26 +9,23 @@ class Player;
 
 class Group
 {
-    int id;
-    int size;
-    AVLTree<shared_ptr<Player>> group_players_by_id;
+    int group_id;
+    int group_size;
     AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> group_players_by_level;
 
 public:
-    Group(int id);
+    Group(int g_id);
     Group() = delete;
     Group(const Group &) = default;
-    ~Group();
+    ~Group() = default;
 
     int GetId();
-    StatusType AddPlayerToGroup(Player *p);
-    StatusType RemovePlayerFromGroup(Player *p);
-    AVLTree<Player> *GetPlayerById();
-    AVLTree<AVLTree<Player>> *GetPlayerByLevel();
-    void SetTrees(AVLTree<Player> *group_players_by_id, AVLTree<AVLTree<Player>> *group_players_by_level);
-    void ClearGroup();
-    //friend void LTRInOrderForGroups(AVLNode<Group> *node, int **array, int *index, int size);
-    //gethighest
+    int GetSize();
+    StatusType AddPlayerToGroup(shared_ptr<Player> p);
+    StatusType RemovePlayerFromGroup(int p_id, int p_level);
+    StatusType RemovePlayerFromGroupWithoutDelete(Player *p);
+    AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &GetPlayerByLevel();
+    void SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> by_level, int new_size);
 };
 
 #endif
