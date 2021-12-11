@@ -21,7 +21,7 @@ template <typename T>
 class AVLNode
 {
     int key;
-    T *data;
+    T data;
     AVLNode *right;
     AVLNode *left;
     AVLNode *parent;
@@ -40,10 +40,12 @@ class AVLNode
             this->key = -1;
             this->height = -1;
         }
-        catch(const std::exception& e) { }
+        catch (const std::exception &e)
+        {
+        }
     }
     int GetKey() const { return (this != 0) ? key : -1; }
-    T *GetData() { return (this != 0) ? data : nullptr; }
+    T GetData() { return (this != 0) ? data : nullptr; }
     void SetLeft(AVLNode *new_left) { left = new_left; }
     AVLNode *GetLeft() const { return (this != 0) ? left : nullptr; }
     void SetRight(AVLNode *new_right) { right = new_right; }
@@ -53,7 +55,11 @@ class AVLNode
     int GetHeight() const { return (this != 0) ? height : -1; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
     void updateHeight() { this->height = 1 + std::max(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight()); }
-    void ClearNode() { data = nullptr; parent = left = right = nullptr; }
+    void ClearNode()
+    {
+        data = nullptr;
+        parent = left = right = nullptr;
+    }
 
     friend class AVLTree<T>;
     //friend class Group;
@@ -146,7 +152,7 @@ private:
     }
     AVLNode<T> *Find_aux(AVLNode<T> *current, int key)
     {
-        if (current != nullptr) 
+        if (current != nullptr)
         {
             const int k = current->GetKey();
             if (k == key)
@@ -232,9 +238,9 @@ private:
                         parent->GetLeft() == current ? parent->SetLeft(nullptr) : parent->SetRight(nullptr);
                         current = parent;
                     }
-                    if(highest == child)
+                    if (highest == child)
                         highest = current;
-                    if(lowest == child)
+                    if (lowest == child)
                         lowest = current;
                     child->ClearNode();
                     delete child;
@@ -321,9 +327,9 @@ private:
                 else //node has one child
                 {
                     //copy content of child to current node
-                    if(highest == child)
+                    if (highest == child)
                         highest = current;
-                    if(lowest == child)
+                    if (lowest == child)
                         lowest = current;
                     T *temp = current->data;
                     current->key = child->key;
@@ -331,9 +337,9 @@ private:
                     child->data = temp;
                     current->SetLeft(child->left);
                     current->SetRight(child->right);
-                    if(child->left)
+                    if (child->left)
                         child->left->SetParent(current);
-                    if(child->right)
+                    if (child->right)
                         child->right->SetParent(current);
                     child->SetLeft(nullptr);
                     child->SetParent(nullptr);
@@ -346,9 +352,9 @@ private:
             {
                 T *temp = current->data;
                 AVLNode<T> *replacement = GetGreatestNode(current->left);
-                if(replacement == highest)
+                if (replacement == highest)
                     highest = current;
-                if(replacement == lowest)
+                if (replacement == lowest)
                     lowest = current;
                 current->key = replacement->key;
                 current->data = replacement->data;
@@ -392,7 +398,7 @@ private:
         std::cout << node->key << " ";
         print_tree(node->right);
     }
-    void GetDataArray_AUX(AVLNode<T> *node, T **array, int *index)
+    void GetDataArray_AUX(AVLNode<T> *node, T *array, int *index)
     {
         if (!node)
             return;
@@ -408,32 +414,53 @@ private:
         array[(*index)++] = node->GetKey();
         GetKeysArray_AUX(node->GetRight(), array, index);
     }
-    AVLNode<T> *SortedArrayToAVL_aux(int keys[], T *data[], int start, int end, AVLNode<T> **min, AVLNode<T> **max, const int last_index)
+    // AVLNode<T> *SortedArrayToAVL_aux(int keys[], T *data[], int start, int end, AVLNode<T> **min, AVLNode<T> **max, const int last_index)
+    // {
+    //     //Base Case
+    //     if (start > end)
+    //         return nullptr;
+
+    //     //Get the middle element and make it root
+    //     int mid = (start + end) / 2;
+    //     AVLNode<T> *root = new AVLNode<T>(keys[mid], data[mid]);
+    //     if (mid == 0)
+    //         *min = root;
+    //     else if (mid == last_index)
+    //         *max = root;
+    //     //Recursively construct the left subtree and make it left child of root
+    //     AVLNode<T> *left_child = SortedArrayToAVL_aux(keys, data, start, mid - 1, min, max, last_index);
+    //     root->SetLeft(left_child);
+    //     if (left_child)
+    //         left_child->SetParent(root);
+    //     //Recursively construct the right subtree and make it right child of root
+    //     AVLNode<T> *right_child = SortedArrayToAVL_aux(keys, data, mid + 1, end, min, max, last_index);
+    //     root->SetRight(right_child);
+    //     if (right_child)
+    //         right_child->SetParent(root);
+    //     root->updateHeight();
+    //     return root;
+    // }
+    AVLNode<T> *SortedArrayToAVLTree(int *keys, T **data, int start, int end)
     {
-        //Base Case
         if (start > end)
             return nullptr;
-
-        //Get the middle element and make it root
         int mid = (start + end) / 2;
-        AVLNode<T> *root = new AVLNode<T>(keys[mid], data[mid]);
-        if (mid == 0)
-            *min = root;
-        else if (mid == last_index)
-            *max = root;
-        //Recursively construct the left subtree and make it left child of root
-        AVLNode<T> *left_child = SortedArrayToAVL_aux(keys, data, start, mid - 1, min, max, last_index);
+        AVLNode<T> *current = new AVLNode<type>(keys[mid], data[mid]);
+
+        AVLNode<T> *left_child = SortedArrayToAVLTree(keys, data, start, mid - 1);
         root->SetLeft(left_child);
         if (left_child)
             left_child->SetParent(root);
-        //Recursively construct the right subtree and make it right child of root
-        AVLNode<T> *right_child = SortedArrayToAVL_aux(keys, data, mid + 1, end, min, max, last_index);
+
+        AVLNode<T> *right_child = SortedArrayToAVLTree(keys, data, mid + 1, end);
         root->SetRight(right_child);
         if (right_child)
             right_child->SetParent(root);
+
         root->updateHeight();
         return root;
     }
+
     void SetHighest(AVLNode<T> *new_highest)
     {
         highest = new_highest;
@@ -459,13 +486,20 @@ private:
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
-    AVLTree(int *keys, T **data, int last_index) // Sorted Array to AVL Tree Constructor
+    AVLTree(int *keys, T *data, int size_of_array) // Sorted Array to AVL Tree Constructor
     {
-        AVLNode<T> *min = nullptr, *max = nullptr;
-        root = SortedArrayToAVL_aux(keys, data, 0, last_index, &min, &max, last_index);
-        highest = max;
-        lowest = min;
-        size = last_index + 1;
+        if (size_of_array == 0)
+            throw FAILURE_exception();
+        //make sure the array is sorted
+        for (int i = 1; i < size_of_array; i++)
+        {
+            if (keys[i - 1] >= keys[i])
+                throw FAILURE_exception();
+        }
+        this->root = SortedArrayToAVLTree(keys, data, size_of_array, 0);
+        this->highest = data[size_of_array - 1];
+        this->lowest = data[0];
+        this->size = size_of_array;
     }
     ~AVLTree()
     {
@@ -497,7 +531,9 @@ public:
             }*/
             size = -1;
         }
-        catch(const std::exception& e) { }
+        catch (const std::exception &e)
+        {
+        }
     }
     void Reset()
     {
@@ -533,7 +569,7 @@ public:
     {
         return root != nullptr;
     }
-    T *Find(int key)
+    T Find(int key)
     {
         AVLNode<T> *node = Find_aux(this->root, key);
         if (node)
@@ -543,7 +579,7 @@ public:
     }
     bool Exists(int key)
     {
-        if(Find(key) == nullptr)
+        if (Find(key) == nullptr)
             return false;
         return true; // didn't go to the catch => it Exist
     }
@@ -552,7 +588,7 @@ public:
         AVLNode<T> *new_node = new AVLNode<T>(key, data);
         //if (!new_node)
         //    return false; // ALLOCATION_ERROR
-        if (!root)        //empty tree, special case
+        if (!root) //empty tree, special case
         {
             root = new_node;
             highest = new_node;
@@ -605,7 +641,7 @@ public:
                 this->lowest = lowest->GetParent();
         }
         root = RemoveNodeWithoutDelete(root, key); // it will return nullptr only if root == nullptr
-        if (!root)                    // RemoveNode failure, root was nullptr, tree is empty
+        if (!root)                                 // RemoveNode failure, root was nullptr, tree is empty
             return false;
         size--;
         return true;
@@ -650,10 +686,10 @@ public:
         print_tree(root);
         std::cout << "" << std::endl;
     }
-    T **GetDataArray()
+    T *GetDataArray()
     {
         int index = 0;
-        T **array = new T *[size];
+        T *array = new T[size];
         GetDataArray_AUX(root, array, &index);
         return array;
     }
@@ -681,6 +717,8 @@ public:
     friend class Player;
 
     template <typename type>
+    friend AVLTree<type> &MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2);
+    template <typename type>
     friend void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size);
     template <typename type>
     friend void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
@@ -696,9 +734,9 @@ void LTRInOrderForGroups(AVLNode<type> *node, int **array, int *index, int size)
     LTRInOrderForGroups(node->GetLeft(), array, index, size);
     // if (node->GetData()->GetPlayerById()->GetTreeSize() > 0)
     // {
-        int id = node->GetData()->GetPlayerByLevel()->GetHighest()->GetLowest()->getId();
-        (*array)[*index] = id;
-        ++(*index);
+    int id = node->GetData()->GetPlayerByLevel()->GetHighest()->GetLowest()->getId();
+    (*array)[*index] = id;
+    ++(*index);
     // }
     // not gonna get nullptr in GetHighest() and GetLowest() because there are players in this group
     LTRInOrderForGroups(node->GetRight(), array, index, size);
@@ -723,5 +761,58 @@ void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // right
     LTRInOrderForPlayers(node->GetData()->GetRoot(), array, index);
     RTLInOrderForPlayers(node->GetLeft(), array, index);
 }
+
+template <typename type>
+AVLTree<type> &MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2)
+{
+    int n1 = tr1.GetTreeSize(), n2 = tr2.GetTreeSize();
+    int *keys1 = tr1.GetKeysArray(), *keys2 = tr2.GetKeysArray();
+    type *data1 = tr1.GetDataArray(), *data2 = tr2.GetDataArray();
+    int i1 = 0, i2 = 0, j = 0;
+    type *merged_data = new type[n1 + n2];
+    int *merged_keys = new int[n1 + n2];
+    while (i1 < n1 && i2 < n2)
+    {
+        if (keys1[i1] < keys2[i2])
+        {
+            merged_data[j] = data1[i1];
+            merged_keys[j] = keys1[i1];
+            i1++;
+        }
+        else if (keys1[i1] > keys2[i2])
+        {
+            merged_data[j] = data2[i2];
+            merged_keys[j] = keys2[i2];
+            i2++;
+        }
+        else //found duplicate key!
+            return 0;
+        j++;
+    }
+    while (i1 < n1)
+    {
+        merged_data[j] = data1[i1];
+        merged_keys[j] = keys1[i1];
+        i1++;
+        j++;
+    }
+    while (i2 < n2)
+    {
+        merged_data[j] = data2[i2];
+        merged_keys[j] = keys2[i2];
+        i2++;
+        j++;
+    }
+    AVLTree<type> merged_tree = AVLTree<type>(merged_keys, merged_data, n1 + n2);
+    delete[] keys1;
+    delete[] keys2;
+    delete[] data1;
+    delete[] data2;
+    delete[] merged_data;
+    delete[] merged_keys;
+
+    return merged_tree;
+}
+
 
 #endif

@@ -1,9 +1,6 @@
 {
-<<<<<<< HEAD
-    "cmake.configureOnOpen": false
-=======
     "files.associations": {
         "new": "cpp"
-    }
->>>>>>> 700254fa307f47e4b8853add6d553ad57b263061
+    },
+    "cmake.configureOnOpen": false
 }

@@ -5,14 +5,16 @@
 #include "AVLTree.h"
 #include "Player.h"
 #include "Group.h"
-
+#include <memory>
+using std::shared_ptr;
 class PlayersManager
 {
-    AVLTree<Player> players_by_id;
-    AVLTree<AVLTree<Player>> players_by_level;
-    AVLTree<Group> groups;
-    AVLTree<Group> empty_groups;
-    int* GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> *tree, int *numOfPlayers);
+
+    AVLTree<shared_ptr<Player>> players_by_id;
+    AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> players_by_level;
+    AVLTree<shared_ptr<Group>> groups;
+    AVLTree<shared_ptr<Group>> empty_groups;
+    int *GetAllPlayersByLevel_AUX(AVLTree<AVLTree<Player>> *tree, int *numOfPlayers);
 
 public:
     PlayersManager();
@@ -23,8 +25,8 @@ public:
     StatusType ReplaceGroup(int GroupID, int ReplacementID);
     StatusType IncreaseLevel(int PlayerID, int LevelIncrease);
     StatusType GetHighestLevel(int GroupID, int *PlayerID);
-    int* GetGroupsHighestLevel(int numOfGroups, StatusType *st);
-    int* GetAllPlayersByLevel(int GroupID, int *numOfPlayers, StatusType *st);
+    int *GetGroupsHighestLevel(int numOfGroups, StatusType *st);
+    int *GetAllPlayersByLevel(int GroupID, int *numOfPlayers, StatusType *st);
     void Quit(PlayersManager *pm);
 };
 
