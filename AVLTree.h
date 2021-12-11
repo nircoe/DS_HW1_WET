@@ -35,10 +35,7 @@ class AVLNode
                 right(nullptr), left(nullptr), parent(nullptr), height(0) {}
     AVLNode(const AVLNode<T> &) = default;
     AVLNode &operator=(const AVLNode &) = default;
-    ~AVLNode()
-    {
-        data.reset();
-    }
+    ~AVLNode() = default;
     int GetMax(int a, int b) { return a > b ? a : b; }
     int GetKey() const { return (this != 0) ? key : -1; }
     T GetData() { return this->data; }
@@ -221,7 +218,6 @@ private:
                 AVLNode<T> *child = current->GetLeft() ? current->GetLeft() : current->GetRight();
                 if (child == nullptr) //node is leaf
                 {
-                    child = current;
                     //disconnect current from his parent
                     AVLNode<T> *parent = current->GetParent();
                     if (parent) //current is not the root of the tree
@@ -232,28 +228,56 @@ private:
                 else //node has one child
                 {
                     //copy content of child to current node
-                    if (highest == child)
-                        highest = current;
-                    if (lowest == child)
-                        lowest = current;
-                    current->key = child->key;
-                    current->data = child->data;
-                    current->SetLeft(nullptr);
-                    current->SetRight(nullptr);
+                    AVLNode<T> *parent = current->GetParent();
+                    if (parent)
+                    {
+                        parent->GetLeft() == current ? parent->SetLeft(child) : parent->SetRight(child);
+                    }
+                    child->SetParent(parent);
                 }
-                delete child;
-                child = nullptr;
+                delete current;
+                current = nullptr;
             }
             else //node has two children
             {
                 AVLNode<T> *replacement = GetGreatestNode(current->left);
-                if (replacement == highest)
-                    highest = current;
-                if (replacement == lowest)
-                    lowest = current;
-                current->key = replacement->key;
-                current->data = replacement->data;
-                current->left = RemoveNode(current->left, replacement->key);
+                AVLNode<T> *rep_parent = replacement->GetParent();
+                AVLNode<T> *rep_son = replacement->GetLeft();
+                AVLNode<T> *parent = current->GetParent();
+                AVLNode<T> *current_right = current->GetRight();
+                AVLNode<T> *current_left = current->GetLeft();
+                if(current_left == replacement)
+                {
+                    replacement->SetParent(parent);
+                    current->SetParent(replacement);
+                    current->SetLeft(rep_son);
+                    current->SetRight(nullptr);
+                    rep_son->SetParent(current);
+                    replacement->SetLeft(current);
+                    replacement->SetRight(current_right);
+                    current_right->SetParent(replacement);
+                    if(parent)
+                        parent->GetLeft() == current ? parent->SetLeft(replacement) : parent->SetRight(replacement);
+                }
+                else
+                {
+                    replacement->SetParent(parent);
+                    if(parent)
+                        parent->GetLeft() == current ? parent->SetLeft(replacement) : parent->SetRight(replacement);
+                    current->SetParent(rep_parent);
+                    current->SetLeft(rep_son);
+                    current->SetRight(nullptr);
+                    rep_parent->SetRight(current);
+                    if(rep_son) 
+                        rep_son->SetParent(current);
+                    replacement->SetRight(current_right);
+                    replacement->SetLeft(current_left);
+                    if(current_right)
+                        current_right->SetParent(replacement);
+                    current_left->SetParent(replacement);
+                }
+                replacement->left = RemoveNode(replacement->left, key_to_remove);
+                current = replacement;
             }
         }
         //tree had one node
