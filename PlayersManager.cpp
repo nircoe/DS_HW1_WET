@@ -66,7 +66,7 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
         return FAILURE;
     shared_ptr<Player> p = players_by_id.Find(PlayerID);
     shared_ptr<Group> g = p.get()->GetGroup();
-    StatusType st = g.get()->RemovePlayerFromGroup(PlayerID,p.get()->GetLevel());
+    StatusType st = g.get()->RemovePlayerFromGroup(PlayerID, p.get()->GetLevel());
     if (st != SUCCESS) // check if the RemovePlayerFromGroup succeed
         return st;
     if (g.get()->GetSize() == 0) //we removed the last player
@@ -79,7 +79,7 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
     shared_ptr<AVLTree<shared_ptr<Player>>> p_tree = players_by_level.Find(p.get()->GetLevel());
     if (!p_tree.get()->Remove(p.get()->GetId()))
         return FAILURE;
-    if(p_tree.get()->GetTreeSize() == 0)
+    if (p_tree.get()->GetTreeSize() == 0)
         players_by_level.Remove(p.get()->GetLevel());
     if (!players_by_id.Remove(p.get()->GetId()))
         return FAILURE;
@@ -88,6 +88,91 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
 }
 StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
 {
+    if (GroupID <= 0 || ReplacementID <= 0 || GroupID == ReplacementID)
+        return INVALID_INPUT;
+    if (empty_groups.Exists(GroupID)) // group is empty so just remove it
+    {
+        // empty_groups.Find(GroupID)->ClearGroup();
+        empty_groups.Remove(GroupID);
+        return SUCCESS;
+    }
+    if (!groups.Exists(GroupID)) //couldn`t find groupId
+        return FAILURE;
+    Group *replacement_group, *current_group;
+    if (groups.Exists(ReplacementID))
+    {
+        replacement_group = groups.Find(ReplacementID).get();
+    }
+    else if (empty_groups.Exists(ReplacementID))
+    {
+        replacement_group = empty_groups.Find(ReplacementID).get();
+    }
+    else //couldn`t find replacementId
+        return FAILURE;
+    //pull groups from tree
+    current_group = groups.Find(GroupID).get();
+    // create and merge trees by level:
+    int n1 = current_group->GetPlayerByLevel()->GetTreeSize(),
+        n2 = replacement_group->GetPlayerByLevel()->GetTreeSize();
+    shared_ptr<AVLTree<shared_ptr<Player>>> *group_levels_array, *replacement_levels_array, *merged_levels_array;
+    group_levels_array = current_group->GetPlayerByLevel()->GetDataArray();
+    replacement_levels_array = replacement_group->GetPlayerByLevel()->GetDataArray();
+    merged_levels_array = new shared_ptr<AVLTree<shared_ptr<Player>>>[n1 + n2];
+    int *merged_keys = new int[n1 + n2];
+    //merge arrays
+    int i1 = 0, i2 = 0, j = 0;
+    int l1, l2;
+    while (i1 < n1 && i2 < n2)
+    {
+        l1 = group_levels_array[i1].get()->GetRootData()->get()->getLevel();
+        l2 = replacement_levels_array[i2].get()->GetRootData()->get()->getLevel();
+        if (l1 < l2)
+        {
+            merged_levels_array[j] = group_levels_array[i1];
+            merged_keys[j] = l1;
+            i1++;
+        }
+        else if (l1 > l2)
+        {
+            merged_levels_array[j] = replacement_levels_array[i2];
+            merged_keys[j] = l2;
+            i2++;
+        }
+        else //trees of the same level, we need to merge them first
+        {
+            //create merged tree
+            AVLTree<shared_ptr<Player>> tr = MergeTrees<shared_ptr<Player>>(*group_levels_array[i1].get(), *replacement_levels_array[i2].get());
+            //put it in shared_ptr
+            shared_ptr<AVLTree<shared_ptr<Player>>> sp(&tr);
+            //put sp in merged_level_trees
+            merged_levels_array[j] = sp;
+        }
+        j++;
+    }
+    while (i1 < n1)
+    {
+        merged_levels_array[j] = group_levels_array[i1];
+        merged_keys[j] = group_levels_array[i1].get()->GetRootData()->get()->getLevel();
+        i1++;
+        j++;
+    }
+    while (i2 < n2)
+    {
+        merged_levels_array[j] = replacement_levels_array[i2];
+        merged_keys[j] = replacement_levels_array[i2].get()->GetRootData()->get()->getLevel();
+        i2++;
+        j++;
+    }
+    AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> merged_tree(merged_keys, merged_levels_array, n1 + n2);
+    replacement_group->GetPlayerByLevel()->Reset();
+    replacement_group->SetTree(merged_tree);
+    if (!groups.Remove(GroupID))
+        throw FAILURE_exception();
+
+    delete[] group_levels_array;
+    delete[] replacement_levels_array;
+    delete[] merged_levels_array;
+    delete[] merged_keys;
     return SUCCESS;
 }
 StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
@@ -102,13 +187,13 @@ StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
     shared_ptr<AVLTree<shared_ptr<Player>>> p_tree = players_by_level.Find(p_level);
     //removing the player and increasing his level
     p_tree.get()->Remove(p_id);
-    if(p_tree.get()->GetTreeSize() == 0)
+    if (p_tree.get()->GetTreeSize() == 0)
     {
         players_by_level.Remove(p_level);
         p_tree.reset();
     }
     players_by_id.Remove(p_id);
-    g.get()->RemovePlayerFromGroup(p_id,p_level);
+    g.get()->RemovePlayerFromGroup(p_id, p_level);
     p.get()->IncrementLevel(LevelIncrease);
     p_level += LevelIncrease;
     //re-inserting the player to the level trees
@@ -146,13 +231,13 @@ StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     }
     if (!groups.Exists(GroupID)) // the group doesn't exist
         return FAILURE;
-    shared_ptr<Group> g = groups.Find(GroupID);                                                   // not gonna throw because it is Exists
-    AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> group_players_level_tree = g.get()->GetPlayerByLevel();         // get the AVLTree of players by level of this group
+    shared_ptr<Group> g = groups.Find(GroupID);                                                               // not gonna throw because it is Exists
+    AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> group_players_level_tree = g.get()->GetPlayerByLevel();  // get the AVLTree of players by level of this group
     shared_ptr<AVLTree<shared_ptr<Player>>> group_highest_level_tree = group_players_level_tree.GetHighest(); // get the highest node in the tree
-    if (!group_highest_level_tree.get())                                                      // there is no players in this group
+    if (!group_highest_level_tree.get())                                                                      // there is no players in this group
         return SUCCESS;
     shared_ptr<Player> highest_player = group_highest_level_tree.get()->GetLowest(); // get the lowest node in the tree => the highest player
-    if (!highest_player)                                            // there is no players in this group
+    if (!highest_player)                                                             // there is no players in this group
         return SUCCESS;
     *PlayerID = highest_player.get()->GetId();
     return SUCCESS;
@@ -169,15 +254,15 @@ int *PlayersManager::GetGroupsHighestLevel(int numOfGroups, StatusType *st)
     int index = 0;
     LTRInOrderForGroups<shared_ptr<Group>>(groups.GetRoot(), &Players, &index, numOfGroups);
     if (index < numOfGroups)
-        {
-            *st = FAILURE;
-            return nullptr;
-        }
+    {
+        *st = FAILURE;
+        return nullptr;
+    }
     *st = SUCCESS;
     return Players;
 }
 
-int* PlayersManager::GetAllPlayersByLevel_AUX(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> tree, int numOfPlayers)
+int *PlayersManager::GetAllPlayersByLevel_AUX(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> tree, int numOfPlayers)
 {
     if (numOfPlayers == 0)
         return nullptr;
