@@ -15,7 +15,7 @@ int Group::GetSize()
 }
 StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
 {
-    int p_id = p.get()->GetId(), p_level = p.get()->GetLevel();
+    int p_level = p.get()->GetLevel();
     shared_ptr<AVLTree<shared_ptr<Player>>> p_tree;
     if (group_players_by_level.Exists(p_level))  //this level tree exists
         p_tree = group_players_by_level.Find(p_level);
