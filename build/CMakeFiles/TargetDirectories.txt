@@ -1,3 +1,0 @@
-/home/nircoe/Desktop/DS_HW1_WET/build/CMakeFiles/rebuild_cache.dir
-/home/nircoe/Desktop/DS_HW1_WET/build/CMakeFiles/DS_Wet_1_Staff_Test.dir
-/home/nircoe/Desktop/DS_HW1_WET/build/CMakeFiles/edit_cache.dir
